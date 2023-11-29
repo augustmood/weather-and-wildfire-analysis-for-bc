@@ -70,9 +70,7 @@ def extract_history(input_dict):
         result[f'cloud_at{hour}'] = input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['cloud']
         result[f'condition_at{hour}'] = input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['condition']['text']
         result[f'condition_icon_link_at{hour}'] = 'https:'+input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['condition']['icon']
-        result[f'chance_of_rain_at{hour}'] = input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['chance_of_rain']
-        result[f'chance_of_snow_at{hour}'] = input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['chance_of_snow']
-    
+
     return result
     
 
