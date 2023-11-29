@@ -2,6 +2,7 @@ from selenium import webdriver
 import requests
 import shutil
 import time
+import os
 
 def download_file(url, destination):
     # Start Chrome WebDriver
@@ -32,7 +33,15 @@ def download_file(url, destination):
         driver.quit()
 
 if __name__ == "__main__":
-    file_url = "https://pub.data.gov.bc.ca/datasets/cdfc2d7b-c046-4bf0-90ac-4897232619e1/prot_current_fire_polys.zip"
-    destination_path = "prot_current_fire_polys.zip"
+    # TO DO: add our file path!!!
+    if os.path.exists("/Users/dexinyang/Downloads/prot_current_fire_polys.zip"):
+        os.remove("/Users/dexinyang/Downloads/prot_current_fire_polys.zip")
+        file_url = "https://pub.data.gov.bc.ca/datasets/cdfc2d7b-c046-4bf0-90ac-4897232619e1/prot_current_fire_polys.zip"
+        destination_path = "/Users/dexinyang/Downloads/prot_current_fire_polys.zip"
 
-    download_file(file_url, destination_path)
+        download_file(file_url, destination_path)
+    else:
+        file_url = "https://pub.data.gov.bc.ca/datasets/cdfc2d7b-c046-4bf0-90ac-4897232619e1/prot_current_fire_polys.zip"
+        destination_path = "/Users/dexinyang/Downloads/prot_current_fire_polys.zip"
+
+        download_file(file_url, destination_path)
