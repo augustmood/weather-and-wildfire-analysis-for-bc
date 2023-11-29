@@ -124,7 +124,7 @@ def fetch_current(aqi=True):
     raw_data = []
 
     def fetch_weather(payload):
-        url = f"http://api.weatherapi.com/v1/current.json?key={config['API_KEY'][0]}&q=bulk{'&aqi=yes' if aqi == True else ''}"
+        url = f"http://api.weatherapi.com/v1/current.json?key={config['API_KEY']}&q=bulk{'&aqi=yes' if aqi == True else ''}"
         headers = {'Content-Type': 'application/json'}
         response = requests.post(url, headers=headers, data=json.dumps(payload))
         if response.status_code == 200:
