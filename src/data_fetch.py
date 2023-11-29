@@ -34,6 +34,7 @@ def extract_current(input_dict):
         'lon': input_dict['query']['location']['lon'],
         'last_updated': input_dict['query']['current']['last_updated'],
         'temp_c': input_dict['query']['current']['temp_c'],
+        'wind_kph': input_dict['query']['current']['wind_kph'],
         'wind_degree': input_dict['query']['current']['wind_degree'],
         'wind_dir': input_dict['query']['current']['wind_dir'],
         'cloud': input_dict['query']['current']['cloud'],
@@ -83,6 +84,19 @@ def extract_forecast(input_dict):
             'condition': input_dict['query']['forecast']['forecastday'][day]['day']['condition']['text'],
             'condition_icon_link': 'https:'+input_dict['query']['forecast']['forecastday'][day]['day']['condition']['icon']
         }
+        for hour in range(24):
+            result[f'is_day_at{hour}'] = input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['is_day']
+            result[f'temp_c_at{hour}'] = input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['temp_c']
+            result[f'humidity_at{hour}'] = input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['humidity']
+            result[f'wind_mph_at{hour}'] = input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['wind_mph']
+            result[f'wind_degree_at{hour}'] = input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['wind_degree']
+            result[f'wind_dir_at{hour}'] = input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['wind_dir']
+            result[f'cloud_at{hour}'] = input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['cloud']
+            result[f'condition_at{hour}'] = input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['condition']['text']
+            result[f'condition_icon_link_at{hour}'] = 'https:'+input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['condition']['icon']
+            result[f'chance_of_rain_at{hour}'] = input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['chance_of_rain']
+            result[f'chance_of_snow_at{hour}'] = input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['chance_of_snow']
+    
         results.append(result)
 
     return results
@@ -141,9 +155,10 @@ def fetch_forecast(days=config['FORECAST_DAYS']+1, aqi=True):
     full_raw_data = raw_data[0]['bulk'] + raw_data[1]['bulk']
 
     return [j for i in [extract_forecast(d) for d in full_raw_data] for j in i]
+    # return full_raw_data
 
 
-def fetch_history(aqi=True):
+def fetch_history():
 
     """
     Fetch last 7 days historical weather data for all 52 cities in British Columnbia.
@@ -155,7 +170,7 @@ def fetch_history(aqi=True):
     history_days = get_last_days()
 
     def fetch_weather(date_str, payload):
-        url = f"http://api.weatherapi.com/v1/history.json?key={config['API_KEY']}&q=bulk{'&aqi=yes' if aqi == True else ''}&dt={date_str}"
+        url = f"http://api.weatherapi.com/v1/history.json?key={config['API_KEY']}&q=bulk&dt={date_str}"
         headers = {'Content-Type': 'application/json'}
         response = requests.post(url, headers=headers, data=json.dumps(payload))
         if response.status_code == 200:
