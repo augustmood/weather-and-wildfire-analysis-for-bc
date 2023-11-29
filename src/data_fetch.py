@@ -47,7 +47,7 @@ def extract_current(input_dict):
 
 def extract_history(input_dict):
 
-    return {
+    result = {
         'name': input_dict['query']['location']['name'],
         'lat': input_dict['query']['location']['lat'],
         'lon': input_dict['query']['location']['lon'],
@@ -59,6 +59,21 @@ def extract_history(input_dict):
         'condition': input_dict['query']['forecast']['forecastday'][0]['day']['condition']['text'],
         'condition_icon_link': 'https:'+input_dict['query']['forecast']['forecastday'][0]['day']['condition']['icon']
     }
+
+    for hour in range(24):
+        result[f'is_day_at{hour}'] = input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['is_day']
+        result[f'temp_c_at{hour}'] = input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['temp_c']
+        result[f'humidity_at{hour}'] = input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['humidity']
+        result[f'wind_mph_at{hour}'] = input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['wind_mph']
+        result[f'wind_degree_at{hour}'] = input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['wind_degree']
+        result[f'wind_dir_at{hour}'] = input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['wind_dir']
+        result[f'cloud_at{hour}'] = input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['cloud']
+        result[f'condition_at{hour}'] = input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['condition']['text']
+        result[f'condition_icon_link_at{hour}'] = 'https:'+input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['condition']['icon']
+        result[f'chance_of_rain_at{hour}'] = input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['chance_of_rain']
+        result[f'chance_of_snow_at{hour}'] = input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['chance_of_snow']
+    
+    return result
     
 
 
