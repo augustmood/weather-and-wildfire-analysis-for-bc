@@ -1,7 +1,6 @@
 from cassandra.cluster import Cluster
 from datetime import datetime
-import os, sys, re, yaml
-from cassandra.query import BatchStatement, SimpleStatement
+import os, sys, re, time, yaml, schedule
 from data_fetch import fetch_forecast, fetch_history_update
 
 
@@ -86,4 +85,7 @@ if __name__=="__main__":
     with open('../config/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
 
-    main(config)
+    schedule.every().day.at(":00").do(main(config))
+    while True:
+        schedule.run_pending()
+        time.sleep(60)
