@@ -1,11 +1,12 @@
-import requests, yaml, json
-import aiohttp, asyncio
+import pandas as pd
+import requests, yaml, json, csv
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 
 with open('config/config.yaml', 'r') as file:
     config = yaml.safe_load(file)
+
 
 locations = [{"q": city+', British Columnbia'} for city in config['CITIES']]
 payloads = [{"locations": locations[:int(len(config['CITIES'])/2)]}, 
@@ -29,7 +30,7 @@ def get_last_days(start_date_str=datetime.now().strftime('%Y-%m-%d'), num_days=c
 def extract_current(input_dict):
 
     return {
-        'name': input_dict['query']['location']['name'],
+        'city': input_dict['query']['location']['name'],
         'lat': input_dict['query']['location']['lat'],
         'lon': input_dict['query']['location']['lon'],
         'last_updated': input_dict['query']['current']['last_updated'],
@@ -41,17 +42,35 @@ def extract_current(input_dict):
         'humidity': input_dict['query']['current']['humidity'],
         'pm2_5': input_dict['query']['current']['air_quality']['pm2_5'],
         'condition': input_dict['query']['current']['condition']['text'],
-        'condition_icon_link': 'https://'+input_dict['query']['current']['condition']['icon']
-}
+        'condition_icon_link': 'https:'+input_dict['query']['current']['condition']['icon']
+    }
+
+def extract_current_list(input_dict):
+
+    return [
+        input_dict['query']['location']['name'],
+        input_dict['query']['location']['lat'],
+        input_dict['query']['location']['lon'],
+        input_dict['query']['current']['last_updated'],
+        input_dict['query']['current']['temp_c'],
+        input_dict['query']['current']['wind_kph'],
+        input_dict['query']['current']['wind_degree'],
+        input_dict['query']['current']['wind_dir'],
+        input_dict['query']['current']['cloud'],
+        input_dict['query']['current']['humidity'],
+        input_dict['query']['current']['air_quality']['pm2_5'],
+        input_dict['query']['current']['condition']['text'],
+        'https:'+input_dict['query']['current']['condition']['icon']
+    ]
 
 
 def extract_history(input_dict):
 
     result = {
-        'name': input_dict['query']['location']['name'],
+        'city': input_dict['query']['location']['name'],
+        'date': input_dict['query']['forecast']['forecastday'][0]['date'],
         'lat': input_dict['query']['location']['lat'],
         'lon': input_dict['query']['location']['lon'],
-        'date': input_dict['query']['forecast']['forecastday'][0]['date'],
         'maxtemp_c': input_dict['query']['forecast']['forecastday'][0]['day']['maxtemp_c'],
         'mintemp_c': input_dict['query']['forecast']['forecastday'][0]['day']['mintemp_c'],
         'avgtemp_c': input_dict['query']['forecast']['forecastday'][0]['day']['avgtemp_c'],
@@ -72,6 +91,35 @@ def extract_history(input_dict):
         result[f'condition_icon_link_at{hour}'] = 'https:'+input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['condition']['icon']
 
     return result
+
+
+def extract_history_list(input_dict):
+
+    result = [
+        input_dict['query']['location']['name'],
+        input_dict['query']['forecast']['forecastday'][0]['date'],
+        input_dict['query']['location']['lat'],
+        input_dict['query']['location']['lon'],
+        input_dict['query']['forecast']['forecastday'][0]['day']['maxtemp_c'],
+        input_dict['query']['forecast']['forecastday'][0]['day']['mintemp_c'],
+        input_dict['query']['forecast']['forecastday'][0]['day']['avgtemp_c'],
+        input_dict['query']['forecast']['forecastday'][0]['day']['avghumidity'],
+        input_dict['query']['forecast']['forecastday'][0]['day']['condition']['text'],
+        'https:'+input_dict['query']['forecast']['forecastday'][0]['day']['condition']['icon']
+    ]
+
+    for hour in range(24):
+        result.append(input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['is_day'])
+        result.append(input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['temp_c'])
+        result.append(input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['humidity'])
+        result.append(input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['wind_mph'])
+        result.append(input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['wind_degree'])
+        result.append(input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['wind_dir'])
+        result.append(input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['cloud'])
+        result.append(input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['condition']['text'])
+        result.append('https:'+input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['condition']['icon'])
+
+    return result
     
 
 
@@ -83,19 +131,19 @@ def extract_forecast(input_dict):
 
     for day in range(1, config['FORECAST_DAYS']+1):
         result = {
-            'name': input_dict['query']['location']['name'],
+            'city': input_dict['query']['location']['name'],
+            'date': input_dict['query']['forecast']['forecastday'][day]['date'],
             'lat': input_dict['query']['location']['lat'],
             'lon': input_dict['query']['location']['lon'],
-            'date': input_dict['query']['forecast']['forecastday'][day]['date'],
             'maxtemp_c': input_dict['query']['forecast']['forecastday'][day]['day']['maxtemp_c'],
             'mintemp_c': input_dict['query']['forecast']['forecastday'][day]['day']['mintemp_c'],
             'avgtemp_c': input_dict['query']['forecast']['forecastday'][day]['day']['avgtemp_c'],
             'avghumidity': input_dict['query']['forecast']['forecastday'][day]['day']['avghumidity'],
+            'condition': input_dict['query']['forecast']['forecastday'][day]['day']['condition']['text'],
+            'condition_icon_link': 'https:'+input_dict['query']['forecast']['forecastday'][day]['day']['condition']['icon'],
             'daily_chance_of_rain': input_dict['query']['forecast']['forecastday'][day]['day']['daily_chance_of_rain'],
             'daily_chance_of_snow': input_dict['query']['forecast']['forecastday'][day]['day']['daily_chance_of_snow'],
             'pm2_5': input_dict['query']['forecast']['forecastday'][day]['day']['air_quality']['pm2_5'],
-            'condition': input_dict['query']['forecast']['forecastday'][day]['day']['condition']['text'],
-            'condition_icon_link': 'https:'+input_dict['query']['forecast']['forecastday'][day]['day']['condition']['icon']
         }
         for hour in range(24):
             result[f'is_day_at{hour}'] = input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['is_day']
@@ -109,6 +157,46 @@ def extract_forecast(input_dict):
             result[f'condition_icon_link_at{hour}'] = 'https:'+input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['condition']['icon']
             result[f'chance_of_rain_at{hour}'] = input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['chance_of_rain']
             result[f'chance_of_snow_at{hour}'] = input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['chance_of_snow']
+    
+        results.append(result)
+
+    return results
+
+
+def extract_forecast_list(input_dict):
+    """
+    load next 3 days data
+    """
+    results = []
+
+    for day in range(1, config['FORECAST_DAYS']+1):
+        result = [
+            input_dict['query']['location']['name'],
+            input_dict['query']['forecast']['forecastday'][day]['date'],
+            input_dict['query']['location']['lat'],
+            input_dict['query']['location']['lon'],
+            input_dict['query']['forecast']['forecastday'][day]['day']['maxtemp_c'],
+            input_dict['query']['forecast']['forecastday'][day]['day']['mintemp_c'],
+            input_dict['query']['forecast']['forecastday'][day]['day']['avgtemp_c'],
+            input_dict['query']['forecast']['forecastday'][day]['day']['avghumidity'],
+            input_dict['query']['forecast']['forecastday'][day]['day']['condition']['text'],
+            'https:'+input_dict['query']['forecast']['forecastday'][day]['day']['condition']['icon'],
+            input_dict['query']['forecast']['forecastday'][day]['day']['daily_chance_of_rain'],
+            input_dict['query']['forecast']['forecastday'][day]['day']['daily_chance_of_snow'],
+            input_dict['query']['forecast']['forecastday'][day]['day']['air_quality']['pm2_5'],
+        ]
+        for hour in range(24):
+            result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['is_day'])
+            result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['temp_c'])
+            result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['humidity'])
+            result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['wind_mph'])
+            result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['wind_degree'])
+            result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['wind_dir'])
+            result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['cloud'])
+            result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['condition']['text'])
+            result.append('https:'+input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['condition']['icon'])
+            result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['chance_of_rain'])
+            result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['chance_of_snow'])
     
         results.append(result)
 
@@ -139,7 +227,12 @@ def fetch_current(aqi=True):
 
     full_raw_data = raw_data[0]['bulk'] + raw_data[1]['bulk']
 
-    return [extract_current(d) for d in full_raw_data]
+    final_data = [extract_current_list(d) for d in full_raw_data]
+    with open('current_weather.csv', 'w+', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(final_data)
+
+    return final_data
 
 
 def fetch_forecast(days=config['FORECAST_DAYS']+1, aqi=True):
@@ -167,8 +260,12 @@ def fetch_forecast(days=config['FORECAST_DAYS']+1, aqi=True):
 
     full_raw_data = raw_data[0]['bulk'] + raw_data[1]['bulk']
 
-    return [j for i in [extract_forecast(d) for d in full_raw_data] for j in i]
-    # return full_raw_data
+    final_data = [j for i in [extract_forecast_list(d) for d in full_raw_data] for j in i]
+    with open('forecast_weather.csv', 'w+', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(final_data)
+
+    return final_data
 
 
 def fetch_history():
@@ -200,6 +297,11 @@ def fetch_history():
         full_raw_data_list.append(raw_data[0]['bulk'] + raw_data[1]['bulk'])
         raw_data = []
 
-    return [extract_history(d) for d in [j for i in full_raw_data_list for j in i]]
+    final_data = [extract_history_list(d) for d in [j for i in full_raw_data_list for j in i]]
+    with open('history_weather.csv', 'w+', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(final_data)
+
+    return final_data
 
     

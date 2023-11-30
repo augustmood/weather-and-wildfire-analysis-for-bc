@@ -1,3 +1,8 @@
 .DS_Store
 test.ipynb
 /src/__pycache__
+current_weather.csv
+forecast_weather.csv
+history_weather.csv
+src/cql_archetype.py
+test.csv
