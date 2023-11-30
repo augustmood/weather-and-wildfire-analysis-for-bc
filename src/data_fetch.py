@@ -228,9 +228,9 @@ def fetch_current(aqi=True):
     full_raw_data = raw_data[0]['bulk'] + raw_data[1]['bulk']
 
     final_data = [extract_current_list(d) for d in full_raw_data]
-    with open('current_weather.csv', 'w+', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerows(final_data)
+    # with open('current_weather.csv', 'w+', newline='') as file:
+    #     writer = csv.writer(file)
+    #     writer.writerows(final_data)
 
     return final_data
 
@@ -239,7 +239,7 @@ def fetch_forecast(days=config['FORECAST_DAYS']+1, aqi=True):
 
     """
     Fetch next 3 days forecast weather data for all 52 cities in British Columnbia.
-    Granularity: by date
+    Granularity: by date & by hour
     """
 
     raw_data = []
@@ -261,9 +261,9 @@ def fetch_forecast(days=config['FORECAST_DAYS']+1, aqi=True):
     full_raw_data = raw_data[0]['bulk'] + raw_data[1]['bulk']
 
     final_data = [j for i in [extract_forecast_list(d) for d in full_raw_data] for j in i]
-    with open('forecast_weather.csv', 'w+', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerows(final_data)
+    # with open('forecast_weather.csv', 'w+', newline='') as file:
+    #     writer = csv.writer(file)
+    #     writer.writerows(final_data)
 
     return final_data
 
@@ -272,7 +272,7 @@ def fetch_history():
 
     """
     Fetch last 7 days historical weather data for all 52 cities in British Columnbia.
-    Granularity: by date
+    Granularity: by date & by hour
     """
 
     full_raw_data_list = []
@@ -298,9 +298,9 @@ def fetch_history():
         raw_data = []
 
     final_data = [extract_history_list(d) for d in [j for i in full_raw_data_list for j in i]]
-    with open('history_weather.csv', 'w+', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerows(final_data)
+    # with open('history_weather.csv', 'w+', newline='') as file:
+    #     writer = csv.writer(file)
+    #     writer.writerows(final_data)
 
     return final_data
 
