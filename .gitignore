@@ -1,5 +1,5 @@
 .DS_Store
-test.ipynb
+/src/test.ipynb
 /src/__pycache__
 current_weather.csv
 forecast_weather.csv
