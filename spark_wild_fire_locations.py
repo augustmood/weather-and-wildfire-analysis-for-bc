@@ -67,7 +67,7 @@ def main():
     locations["geometry"] = locations["geometry"].apply(lambda x: dumps(x))
     # locations["geometry"] = locations["geometry"] \
     # .apply(lambda x: coord_converter(avg_coord(poly_converter(x))))
-    locations_df = spark.createDataFrame(locations)
+    locations_df = spark.createDataFrame(locations).repartition(50)
     locations_df = locations_df.withColumnRenamed("FIRE_NUM", "fire_num")
     locations_df.show(20)
     # locations_df.write.format("org.apache.spark.sql.cassandra").mode("overwrite").option("confirm.truncate", "true").options(table=table, keyspace=keyspace).save()
