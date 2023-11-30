@@ -25,6 +25,7 @@ def main(config):
         condition_icon_link TEXT,
         PRIMARY KEY (city)
     )""")
+    session.execute("TRUNCATE TABLE current_weather")
 
     data_current = fetch_current()
 
