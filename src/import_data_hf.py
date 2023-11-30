@@ -8,6 +8,7 @@ from data_fetch import fetch_forecast, fetch_history
 def main(config):
     cluster = Cluster(['node1.local', 'node2.local'])
     session = cluster.connect()
+    session.execute(f"USE {config['KEYSPACE']}")
     session.execute("""
     CREATE TABLE IF NOT EXISTS history_weather (
         city TEXT,
