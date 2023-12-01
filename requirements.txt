@@ -3,3 +3,4 @@ requests
 yaml
 json
 zipfile
+selenium
