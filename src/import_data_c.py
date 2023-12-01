@@ -6,6 +6,7 @@ from cassandra.query import BatchStatement, SimpleStatement
 
 def main(config):
 
+    print(f"update current_weather at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     data_current = fetch_current()
 
     cluster = Cluster(['node1.local', 'node2.local'])
@@ -30,7 +31,7 @@ if __name__=="__main__":
     with open('../config/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
 
-    schedule.every().hour.at(":00").do(main(config))
+    schedule.every().hour.at(":03").do(main, config)
     while True:
         schedule.run_pending()
-        time.sleep(60)
+        time.sleep(10)
