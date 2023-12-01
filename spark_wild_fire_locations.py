@@ -7,6 +7,7 @@ from shapely.geometry import Polygon, MultiPolygon
 import numpy as np
 from shapely.wkt import dumps, loads
 import zipfile
+from simpledbf import Dbf5
 
 # function to transfer EPSG: 3005 Geographic coordinates to EPSG 4326 Coordinates.
 
@@ -69,9 +70,20 @@ def main():
     # .apply(lambda x: coord_converter(avg_coord(poly_converter(x))))
     locations_df = spark.createDataFrame(locations).repartition(50)
     locations_df = locations_df.withColumnRenamed("FIRE_NUM", "fire_num")
-    locations_df.show(20)
+    locations_df.show(10)
+
+    dbf = Dbf5('prot_current_fire_polys.dbf') 
+    wildfire = dbf.to_dataframe()
+    wildfire.columns = map(str.lower, wildfire.columns)
+    wildfire_df = spark.createDataFrame(wildfire)
+    wildfire_df = wildfire_df.withColumnRenamed("FIRE_NUM", "fire_num")
+    wildfire_df.show(10)
+
+    join_cond = [locations_df.fire_num == wildfire_df.fire_num]
+    wildfire_table = wildfire_df.join(locations_df, join_cond).drop(locations_df.fire_num)
+    wildfire_table.show(10)
     # locations_df.write.format("org.apache.spark.sql.cassandra").mode("overwrite").option("confirm.truncate", "true").options(table=table, keyspace=keyspace).save()
-    locations_df.write.format("org.apache.spark.sql.cassandra").mode("overwrite").option("confirm.truncate", "true").options(table='wildfire', keyspace='bla175').save()
+    wildfire_table.write.format("org.apache.spark.sql.cassandra").mode("overwrite").option("confirm.truncate", "true").options(table='wildfiretable', keyspace='bla175').save()
 
 if __name__ == '__main__':
     cluster_seeds = ['node1.local', 'node2.local']

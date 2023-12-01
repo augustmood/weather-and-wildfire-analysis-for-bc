@@ -3,4 +3,5 @@ requests
 yaml
 json
 zipfile
+selenium
 schedule
