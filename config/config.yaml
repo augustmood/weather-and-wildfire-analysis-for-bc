@@ -264,7 +264,6 @@ FORECAST_COLUMNS:
 - condition_icon_link
 - daily_chance_of_rain
 - daily_chance_of_snow
-- pm2_5
 - is_day_at0
 - temp_c_at0
 - humidity_at0

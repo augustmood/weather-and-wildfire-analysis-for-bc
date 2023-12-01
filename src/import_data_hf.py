@@ -2,79 +2,41 @@ from cassandra.cluster import Cluster
 from datetime import datetime
 import os, sys, re, time, yaml, schedule
 from data_fetch import fetch_forecast, fetch_history_update
-
+from cassandra.query import BatchStatement, SimpleStatement
 
 def main(config):
-    cluster = Cluster(['node1.local', 'node2.local'])
-    session = cluster.connect()
-    session.execute(f"USE {config['KEYSPACE']}")
-    session.execute("""
-    CREATE TABLE IF NOT EXISTS history_weather (
-        city TEXT,
-        date DATE,
-        lat DECIMAL,
-        lon DECIMAL,
-        maxtemp_c DECIMAL,
-        mintemp_c DECIMAL,
-        avgtemp_c DECIMAL,
-        avghumidity DECIMAL,
-        condition TEXT,
-        condition_icon_link TEXT,""" + ''.join([f"""
-        is_day_at{i} INT, 
-        temp_c_at{i} DECIMAL, 
-        humidity_at{i} DECIMAL, 
-        wind_mph_at{i} DECIMAL, 
-        wind_degree_at{i} INT, 
-        wind_dir_at{i} TEXT, 
-        cloud_at{i} INT, 
-        condition_at{i} TEXT, 
-        condition_icon_link_at{i} TEXT,""" for i in range(24)]) + """
-        PRIMARY KEY (city, date)
-    )""")
-    session.execute("""
-    CREATE TABLE IF NOT EXISTS forecast_weather (
-        city TEXT,
-        date DATE,
-        lat DECIMAL,
-        lon DECIMAL,
-        maxtemp_c DECIMAL,
-        mintemp_c DECIMAL,
-        avgtemp_c DECIMAL,
-        avghumidity DECIMAL,
-        condition TEXT,
-        condition_icon_link TEXT,
-        daily_chance_of_rain INT,
-        daily_chance_of_snow INT,
-        pm2_5 FLOAT,""" + ''.join([f"""
-        is_day_at{i} INT, 
-        temp_c_at{i} DECIMAL, 
-        humidity_at{i} DECIMAL, 
-        wind_mph_at{i} DECIMAL, 
-        wind_degree_at{i} INT, 
-        wind_dir_at{i} TEXT, 
-        cloud_at{i} INT, 
-        condition_at{i} TEXT, 
-        condition_icon_link_at{i} TEXT,
-        chance_of_rain_at{i} INT,
-        chance_of_snow_at{i} INT,""" for i in range(24)]) + """
-        PRIMARY KEY (city, date)
-    )""")    
-    session.execute("TRUNCATE TABLE forecast_weather")
 
     data_forecast = fetch_forecast()
     data_history = fetch_history_update()
 
-    batch_statement = "BEGIN BATCH "
-    for row in data_forecast:
-        batch_statement += f"""
-        INSERT INTO {config['KEYSPACE']}.forecast_weather 
-        {str(tuple(config['FORECAST_COLUMNS'])).replace("'","")} VALUES {tuple(row)};"""
-    for row in data_history:
-        batch_statement += f"""
-        INSERT INTO {config['KEYSPACE']}.history_weather 
-        {str(tuple(config['HISTORY_COLUMNS'])).replace("'","")} VALUES {tuple(row)};"""
-    batch_statement += "\nAPPLY BATCH;"
-    session.execute(batch_statement)
+    cluster = Cluster(['node1.local', 'node2.local'])
+    session = cluster.connect()
+    session.execute(f"USE {config['KEYSPACE']}")
+    session.execute("TRUNCATE TABLE forecast_weather")
+
+    def batch_insert(data, data_type):
+
+        cols = str(tuple(config[f'{data_type.upper()}_COLUMNS'])).replace("'","")
+        val_replace = f"({'?, '*(len(config[f'{data_type.upper()}_COLUMNS'])-1)}?)"
+
+        batch = BatchStatement()
+        batch_count = 0
+        insert_cmd = session.prepare(f"INSERT INTO {data_type}_weather {cols} VALUES {val_replace}")
+
+        for row in data:
+            batch.add(insert_cmd, tuple(row))
+            batch_count += 1
+            if batch_count == 5:
+                session.execute(batch)
+                batch.clear()
+                batch_count = 0
+        
+        session.execute(batch)
+        batch.clear()
+        batch_count = 0
+
+    batch_insert(data_forecast,'forecast')
+    batch_insert(data_history,'history')
 
     session.shutdown()
 

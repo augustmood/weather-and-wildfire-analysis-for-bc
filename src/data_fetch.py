@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 
-with open('config/config.yaml', 'r') as file:
+with open('../config/config.yaml', 'r') as file:
     config = yaml.safe_load(file)
 
 
@@ -95,8 +95,7 @@ def extract_forecast(input_dict):
             input_dict['query']['forecast']['forecastday'][day]['day']['condition']['text'],
             'https:'+input_dict['query']['forecast']['forecastday'][day]['day']['condition']['icon'],
             input_dict['query']['forecast']['forecastday'][day]['day']['daily_chance_of_rain'],
-            input_dict['query']['forecast']['forecastday'][day]['day']['daily_chance_of_snow'],
-            input_dict['query']['forecast']['forecastday'][day]['day']['air_quality']['pm2_5'],
+            input_dict['query']['forecast']['forecastday'][day]['day']['daily_chance_of_snow']
         ]
         for hour in range(24):
             result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['is_day'])

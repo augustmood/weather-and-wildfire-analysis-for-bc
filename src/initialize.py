@@ -1,22 +1,26 @@
 from cassandra.cluster import Cluster
 from datetime import datetime
-import os, sys, re, yaml
-from cassandra.query import BatchStatement, SimpleStatement
+import os, sys, re, yaml, time
 from data_fetch import fetch_history
-
+from cassandra.query import BatchStatement, SimpleStatement
 
 def main(config):
+
+    data = fetch_history()
+
     cluster = Cluster(['node1.local', 'node2.local'])
     session = cluster.connect()
     session.execute(f"USE {config['KEYSPACE']}")
+
     session.execute("DROP TABLE IF EXISTS current_weather")
     session.execute("DROP TABLE IF EXISTS history_weather")
     session.execute("DROP TABLE IF EXISTS forecast_weather")
+
     session.execute("""
     CREATE TABLE IF NOT EXISTS current_weather (city TEXT,
         lat DECIMAL,
         lon DECIMAL,
-        last_updated TIMESTAMP,
+        last_updated TEXT,
         temp_c DECIMAL,
         wind_kph DECIMAL,
         wind_degree INT,
@@ -80,15 +84,24 @@ def main(config):
         PRIMARY KEY (city, date)
     )""")    
 
-    data_history = fetch_history()
+    cols = str(tuple(config['HISTORY_COLUMNS'])).replace("'","")
+    val_replace = f"({'?, '*(len(config['HISTORY_COLUMNS'])-1)}?)"
 
-    batch_statement = "BEGIN BATCH "
-    for row in data_history:
-        batch_statement += f"""
-        INSERT INTO {config['KEYSPACE']}.history_weather 
-        {str(tuple(config['HISTORY_COLUMNS'])).replace("'","")} VALUES {tuple(row)};"""
-    batch_statement += "\nAPPLY BATCH;"
-    session.execute(batch_statement)
+    batch = BatchStatement()
+    batch_count = 0
+    insert_history = session.prepare(f"INSERT INTO history_weather {cols} VALUES {val_replace}")
+
+    for row in data:
+        batch.add(insert_history, tuple(row))
+        batch_count += 1
+        if batch_count == 5:
+            session.execute(batch)
+            batch.clear()
+            batch_count = 0
+    
+    session.execute(batch)
+    batch.clear()
+    batch_count = 0
 
     session.shutdown()
 
@@ -98,5 +111,8 @@ if __name__=="__main__":
 
     with open('../config/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
-
+    
+    t1 = time.time()
     main(config)
+    t2 = time.time()
+    print(f"time cost:{t2-t1}")
