@@ -1,5 +1,5 @@
 import pandas as pd
-import requests, yaml, json, csv
+import requests, yaml, json, csv, time
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
@@ -122,17 +122,22 @@ def fetch_current(aqi=True):
     """
 
     raw_data = []
-
+    
     def fetch_weather(payload):
+        retry, attempt = 0, 5
         url = f"http://api.weatherapi.com/v1/current.json?key={config['API_KEY']}&q=bulk{'&aqi=yes' if aqi == True else ''}"
         headers = {'Content-Type': 'application/json'}
-        response = requests.post(url, headers=headers, data=json.dumps(payload))
-        if response.status_code == 200:
-            raw_data.append(response.json())
-        else:
-            print(f"Request failed with status code: {response.status_code}")
-            print(response.text)
-            return None
+        while retry < attempt:
+            response = requests.post(url, headers=headers, data=json.dumps(payload))
+            if response.status_code == 200:
+                raw_data.append(response.json())
+                return None
+            else:
+                print(f"Attempt {retry} failed with status code: {response.status_code}. Retry in 5s")
+                retry += 1
+                time.sleep(5)
+                continue
+        print(f"All {attempt} attemps failed. Need human hands on.")
 
     with ThreadPoolExecutor(max_workers=10) as executor:
         executor.map(fetch_weather, payloads)
@@ -153,15 +158,20 @@ def fetch_forecast(days=config['FORECAST_DAYS']+1, aqi=True):
     raw_data = []
 
     def fetch_weather(payload):
+        retry, attempt = 0, 5
         url = f"http://api.weatherapi.com/v1/forecast.json?key={config['API_KEY']}&q=bulk{'&aqi=yes' if aqi == True else ''}&days={days}"
         headers = {'Content-Type': 'application/json'}
-        response = requests.post(url, headers=headers, data=json.dumps(payload))
-        if response.status_code == 200:
-            raw_data.append(response.json())
-        else:
-            print(f"Request failed with status code: {response.status_code}")
-            print(response.text)
-            return None
+        while retry < attempt:
+            response = requests.post(url, headers=headers, data=json.dumps(payload))
+            if response.status_code == 200:
+                raw_data.append(response.json())
+                return None
+            else:
+                print(f"Attempt {retry} failed with status code: {response.status_code}. Retry in 5s")
+                retry += 1
+                time.sleep(5)
+                continue
+        print(f"All {attempt} attemps failed. Need human hands on.")
 
     with ThreadPoolExecutor(max_workers=10) as executor:
         executor.map(fetch_weather, payloads)
@@ -183,16 +193,21 @@ def fetch_history():
     raw_data = []
     history_days = get_last_days()
 
-    def fetch_weather(date_str, payload):
-        url = f"http://api.weatherapi.com/v1/history.json?key={config['API_KEY']}&q=bulk&dt={date_str}"
+    def fetch_weather(data_str, payload):
+        retry, attempt = 0, 5
+        url = f"http://api.weatherapi.com/v1/history.json?key={config['API_KEY']}&q=bulk&dt={data_str}"
         headers = {'Content-Type': 'application/json'}
-        response = requests.post(url, headers=headers, data=json.dumps(payload))
-        if response.status_code == 200:
-            raw_data.append(response.json())
-        else:
-            print(f"Request failed with status code: {response.status_code}")
-            print(response.text)
-            return None
+        while retry < attempt:
+            response = requests.post(url, headers=headers, data=json.dumps(payload))
+            if response.status_code == 200:
+                raw_data.append(response.json())
+                return None
+            else:
+                print(f"Attempt {retry} failed with status code: {response.status_code}. Retry in 5s")
+                retry += 1
+                time.sleep(5)
+                continue
+        print(f"All {attempt} attemps failed. Need human hands on.")
 
     for day in history_days:
         with ThreadPoolExecutor(max_workers=10) as executor:
@@ -213,17 +228,22 @@ def fetch_history_update():
     """
 
     raw_data = []
-
+    
     def fetch_weather(payload):
+        retry, attempt = 0, 3
         url = f"http://api.weatherapi.com/v1/history.json?key={config['API_KEY']}&q=bulk&dt={(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}"
         headers = {'Content-Type': 'application/json'}
-        response = requests.post(url, headers=headers, data=json.dumps(payload))
-        if response.status_code == 200:
-            raw_data.append(response.json())
-        else:
-            print(f"Request failed with status code: {response.status_code}")
-            print(response.text)
-            return None
+        while retry < attempt:
+            response = requests.post(url, headers=headers, data=json.dumps(payload))
+            if response.status_code == 200:
+                raw_data.append(response.json())
+                return None
+            else:
+                print(f"Attempt {retry} failed with status code: {response.status_code}. Retry in 5s")
+                retry += 1
+                time.sleep(5)
+                continue
+        print(f"All {attempt} attemps failed. Need human hands on.")
 
     with ThreadPoolExecutor(max_workers=10) as executor:
             executor.map(fetch_weather, payloads)
