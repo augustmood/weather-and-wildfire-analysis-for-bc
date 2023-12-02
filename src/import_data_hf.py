@@ -13,7 +13,6 @@ def main(config):
     cluster = Cluster(['node1.local', 'node2.local'])
     session = cluster.connect()
     session.execute(f"USE {config['KEYSPACE']}")
-    session.execute("TRUNCATE TABLE forecast_weather")
 
     def batch_insert(data, data_type):
 

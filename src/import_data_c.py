@@ -12,7 +12,6 @@ def main(config):
     cluster = Cluster(['node1.local', 'node2.local'])
     session = cluster.connect()
     session.execute(f"USE {config['KEYSPACE']}")
-    session.execute("TRUNCATE TABLE current_weather")
 
     batch_statement = "BEGIN BATCH "
     for row in data_current:
@@ -34,4 +33,4 @@ if __name__=="__main__":
     schedule.every().hour.at(":03").do(main, config)
     while True:
         schedule.run_pending()
-        time.sleep(10)
+        time.sleep(60)
