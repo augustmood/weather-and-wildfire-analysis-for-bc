@@ -2,6 +2,11 @@ pandas
 requests
 yaml
 json
-zipfile
 selenium
 schedule
+simpledbf
+geopandas
+pyproj
+shapely
+cassandra-driver
+dash
