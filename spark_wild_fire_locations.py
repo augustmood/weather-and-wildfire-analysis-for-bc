@@ -84,7 +84,7 @@ def main():
     wildfire_table.show(10)
     # We may change the code below to set the keyspace from the config.yaml file.
     wildfire_table.write.format("org.apache.spark.sql.cassandra").mode("overwrite")\
-        .option("confirm.truncate", "true").options(table='wildfiretable', keyspace='bla175').save()
+        .option("confirm.truncate", "true").options(table='wildfire', keyspace='bla175').save()
 
 if __name__ == '__main__':
     cluster_seeds = ['node1.local', 'node2.local']
