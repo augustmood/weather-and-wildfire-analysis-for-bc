@@ -1,28 +1,34 @@
-from cassandra.cluster import Cluster
+import time, yaml, schedule
 from datetime import datetime
-import os, sys, re, time, yaml, schedule
-from data_fetch import fetch_current
-from cassandra.query import BatchStatement, SimpleStatement
+from data_fetch import WeatherDataExtractor
+from cassandra import ConsistencyLevel
+from cassandra.cluster import Cluster
+from cassandra.query import BatchStatement
 
-def main(config):
+def main(weather_data_fetcher, config):
 
     print(f"update current_weather at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    data_current = fetch_current()
+    data_current = weather_data_fetcher.fetch_current()
 
     cluster = Cluster(['node1.local', 'node2.local'])
     session = cluster.connect()
     session.execute(f"USE {config['KEYSPACE']}")
 
-    batch_statement = "BEGIN BATCH "
+    
+    cols = str(tuple(config[f'CURRENT_COLUMNS'])).replace("'","")
+    val_replace = f"({'?, '*(len(config[f'CURRENT_COLUMNS'])-1)}?)"
+
+    batch = BatchStatement()
+    insert_cmd = session.prepare(f"INSERT INTO current_weather {cols} VALUES {val_replace}")
+    insert_cmd.consistency_level = ConsistencyLevel.ONE
+
     for row in data_current:
-        batch_statement += f"""
-        INSERT INTO {config['KEYSPACE']}.current_weather 
-        {str(tuple(config['CURRENT_COLUMNS'])).replace("'","")} VALUES {tuple(row)};"""
-    batch_statement += "\nAPPLY BATCH;"
-    session.execute(batch_statement)
+        batch.add(insert_cmd, tuple(row))
+    
+    session.execute(batch)
+    batch.clear()
 
     session.shutdown()
-
 
 
 if __name__=="__main__":
@@ -30,7 +36,8 @@ if __name__=="__main__":
     with open('../config/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
 
-    schedule.every().hour.at(":03").do(main, config)
+    weather_data_fetcher = WeatherDataExtractor(config)
+    schedule.every().hour.at(":03").do(main, weather_data_fetcher, config)
     while True:
         schedule.run_pending()
         time.sleep(60)

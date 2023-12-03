@@ -1,12 +1,14 @@
-from cassandra.cluster import Cluster
+import time, yaml
 from datetime import datetime
-import os, sys, re, yaml, time
-from data_fetch import fetch_history
-from cassandra.query import BatchStatement, SimpleStatement
+from data_fetch import WeatherDataExtractor
+from cassandra import ConsistencyLevel
+from cassandra.cluster import Cluster
+from cassandra.query import BatchStatement
 
-def main(config):
+def main(weather_data_fetcher, config):
 
-    data = fetch_history()
+    print(f"Initalize database at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    data = weather_data_fetcher.fetch_history()
 
     cluster = Cluster(['node1.local', 'node2.local'])
     session = cluster.connect()
@@ -111,8 +113,9 @@ if __name__=="__main__":
 
     with open('../config/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
-    
+    weather_data_fetcher = WeatherDataExtractor(config)
+
     t1 = time.time()
-    main(config)
+    main(weather_data_fetcher, config)
     t2 = time.time()
     print(f"time cost:{t2-t1}")

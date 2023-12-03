@@ -1,4 +1,5 @@
 .DS_Store
 /src/test.ipynb
+/src/current.json
 /src/__pycache__
 *.pyc
