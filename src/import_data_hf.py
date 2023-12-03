@@ -1,7 +1,8 @@
-from cassandra.cluster import Cluster
-from datetime import datetime
 import os, sys, re, time, yaml, schedule
+from datetime import datetime
 from data_fetch import fetch_forecast, fetch_history_update
+from cassandra import ConsistencyLevel
+from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement, SimpleStatement
 
 def main(config):
@@ -22,6 +23,7 @@ def main(config):
         batch = BatchStatement()
         batch_count = 0
         insert_cmd = session.prepare(f"INSERT INTO {data_type}_weather {cols} VALUES {val_replace}")
+        insert_cmd.consistency_level = ConsistencyLevel.ONE
 
         for row in data:
             batch.add(insert_cmd, tuple(row))

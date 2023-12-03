@@ -1,7 +1,8 @@
-from cassandra.cluster import Cluster
-from datetime import datetime
 import os, sys, re, time, yaml, schedule
+from datetime import datetime
 from data_fetch import fetch_current
+from cassandra import ConsistencyLevel
+from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement, SimpleStatement
 
 def main(config):
@@ -13,16 +14,21 @@ def main(config):
     session = cluster.connect()
     session.execute(f"USE {config['KEYSPACE']}")
 
-    batch_statement = "BEGIN BATCH "
+    
+    cols = str(tuple(config[f'CURRENT_COLUMNS'])).replace("'","")
+    val_replace = f"({'?, '*(len(config[f'CURRENT_COLUMNS'])-1)}?)"
+
+    batch = BatchStatement()
+    insert_cmd = session.prepare(f"INSERT INTO current_weather {cols} VALUES {val_replace}")
+    insert_cmd.consistency_level = ConsistencyLevel.ONE
+
     for row in data_current:
-        batch_statement += f"""
-        INSERT INTO {config['KEYSPACE']}.current_weather 
-        {str(tuple(config['CURRENT_COLUMNS'])).replace("'","")} VALUES {tuple(row)};"""
-    batch_statement += "\nAPPLY BATCH;"
-    session.execute(batch_statement)
+        batch.add(insert_cmd, tuple(row))
+    
+    session.execute(batch)
+    batch.clear()
 
     session.shutdown()
-
 
 
 if __name__=="__main__":
