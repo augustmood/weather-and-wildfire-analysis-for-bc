@@ -16,7 +16,7 @@ class WeatherDataExtractor:
                          {"locations": self._locations[int(len(self._config['CITIES']) / 2):]}]
         self.retries = retries
 
-    def get_last_days(self, start_date_str=datetime.now().strftime('%Y-%m-%d'), num_days=None):
+    def _get_last_days(self, start_date_str=datetime.now().strftime('%Y-%m-%d'), num_days=None):
         num_days = num_days or self._config['HISTORY_DAYS']
         date_format = "%Y-%m-%d"
         last_dates = []
@@ -28,7 +28,7 @@ class WeatherDataExtractor:
 
         return last_dates
         
-    def extract_current(self, input_dict):
+    def _extract_current(self, input_dict):
         return [
             input_dict['query']['location']['name'],
             input_dict['query']['location']['lat'],
@@ -45,7 +45,7 @@ class WeatherDataExtractor:
             'https:'+input_dict['query']['current']['condition']['icon']
         ]
 
-    def extract_history(self, input_dict):
+    def _extract_history(self, input_dict):
         result = [
             input_dict['query']['location']['name'],
             input_dict['query']['forecast']['forecastday'][0]['date'],
@@ -71,7 +71,7 @@ class WeatherDataExtractor:
 
         return result
         
-    def extract_forecast(self, input_dict):
+    def _extract_forecast(self, input_dict):
         """
         load next 3 days data
         """
@@ -109,7 +109,7 @@ class WeatherDataExtractor:
 
         return results
 
-    def fetch_weather(self, url, payload):
+    def _fetch_weather(self, url, payload):
         retry = 0
         while retry < self.retries:
             response = requests.post(url, headers={'Content-Type': 'application/json'}, data=json.dumps(payload))
@@ -132,14 +132,14 @@ class WeatherDataExtractor:
         url = f"http://api.weatherapi.com/v1/current.json?key={self._config['API_KEY']}&q=bulk{'&aqi=yes' if aqi == True else ''}"
 
         with ThreadPoolExecutor(max_workers=10) as executor:
-            partial_fetch_weather = partial(self.fetch_weather, url)
+            partial_fetch_weather = partial(self._fetch_weather, url)
             executor.map(partial_fetch_weather, self._payloads)
 
         full_raw_data = self._raw_data[0]['bulk'] + self._raw_data[1]['bulk']
         with open('current.json', 'w+') as f:
             json.dump(full_raw_data, f)
 
-        final_data = [self.extract_current(d) for d in full_raw_data]
+        final_data = [self._extract_current(d) for d in full_raw_data]
         self._raw_data.clear()
         return final_data
 
@@ -153,12 +153,12 @@ class WeatherDataExtractor:
         url = f"http://api.weatherapi.com/v1/forecast.json?key={self._config['API_KEY']}&q=bulk{'&aqi=yes' if aqi == True else ''}&days={self._config['FORECAST_DAYS']+1}"
 
         with ThreadPoolExecutor(max_workers=10) as executor:
-            partial_fetch_weather = partial(self.fetch_weather, url)
+            partial_fetch_weather = partial(self._fetch_weather, url)
             executor.map(partial_fetch_weather, self._payloads)
 
         full_raw_data = self._raw_data[0]['bulk'] + self._raw_data[1]['bulk']
 
-        final_data = [j for i in [self.extract_forecast(d) for d in full_raw_data] for j in i]
+        final_data = [j for i in [self._extract_forecast(d) for d in full_raw_data] for j in i]
         self._raw_data.clear()
         return final_data
 
@@ -170,17 +170,17 @@ class WeatherDataExtractor:
         Granularity: by date & by hour
         """
         full_raw_data_list = []
-        history_days = self.get_last_days()
+        history_days = self._get_last_days()
 
         for day in history_days:
             url = f"http://api.weatherapi.com/v1/history.json?key={self._config['API_KEY']}&q=bulk&dt={day}"
             with ThreadPoolExecutor(max_workers=10) as executor:
-                    partial_fetch_weather = partial(self.fetch_weather, url)
+                    partial_fetch_weather = partial(self._fetch_weather, url)
                     executor.map(partial_fetch_weather, self._payloads)
             full_raw_data_list.append(self._raw_data[0]['bulk'] + self._raw_data[1]['bulk'])
             self._raw_data.clear()
 
-        final_data = [self.extract_history(d) for d in [j for i in full_raw_data_list for j in i]]
+        final_data = [self._extract_history(d) for d in [j for i in full_raw_data_list for j in i]]
         self._raw_data.clear()
         return final_data
 
@@ -194,12 +194,12 @@ class WeatherDataExtractor:
         url = f"http://api.weatherapi.com/v1/history.json?key={self._config['API_KEY']}&q=bulk&dt={(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}"
 
         with ThreadPoolExecutor(max_workers=10) as executor:
-                partial_fetch_weather = partial(self.fetch_weather, url)
+                partial_fetch_weather = partial(self._fetch_weather, url)
                 executor.map(partial_fetch_weather, self._payloads)
 
         full_raw_data = self._raw_data[0]['bulk'] + self._raw_data[1]['bulk']
 
-        final_data = [self.extract_history(d) for d in full_raw_data]
+        final_data = [self._extract_history(d) for d in full_raw_data]
         self._raw_data.clear()
         return final_data
         
