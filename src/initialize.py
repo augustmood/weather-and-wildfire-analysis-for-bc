@@ -31,7 +31,7 @@ def main(weather_data_fetcher, config):
         humidity INT,
         pm2_5 FLOAT,
         condition TEXT,
-        condition_icon_id INT,
+        condition_icon_id TEXT,
         PRIMARY KEY (city)
     )""")
     session.execute("""
@@ -45,7 +45,7 @@ def main(weather_data_fetcher, config):
         avgtemp_c DECIMAL,
         avghumidity DECIMAL,
         condition TEXT,
-        condition_icon_id INT,""" + ''.join([f"""
+        condition_icon_id TEXT,""" + ''.join([f"""
         is_day_at{i} INT, 
         temp_c_at{i} DECIMAL, 
         humidity_at{i} DECIMAL, 
@@ -68,7 +68,7 @@ def main(weather_data_fetcher, config):
         avgtemp_c DECIMAL,
         avghumidity DECIMAL,
         condition TEXT,
-        condition_icon_id INT,
+        condition_icon_id TEXT,
         daily_chance_of_rain INT,
         daily_chance_of_snow INT,
         pm2_5 FLOAT,""" + ''.join([f"""
