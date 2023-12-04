@@ -11,9 +11,9 @@ class WeatherDataExtractor:
     def __init__(self, config, retries=5):
         self._config = config
         self._raw_data = []
-        self._locations = [{"q": city + ', British Columnbia'} for city in self._config['CITIES']]
-        self._payloads = [{"locations": self._locations[:int(len(self._config['CITIES']) / 2)]},
-                         {"locations": self._locations[int(len(self._config['CITIES']) / 2):]}]
+        self._locations = [{"q": city + ', British Columnbia'} for city in self._config['EXTENDED_CITIES']]
+        self._payloads = [{"locations": self._locations[:int(len(self._config['EXTENDED_CITIES']) / 2)]},
+                         {"locations": self._locations[int(len(self._config['EXTENDED_CITIES']) / 2):]}]
         self.retries = retries
 
     def _get_last_days(self, start_date_str=datetime.now().strftime('%Y-%m-%d'), num_days=None):
