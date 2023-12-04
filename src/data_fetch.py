@@ -11,7 +11,7 @@ class WeatherDataExtractor:
     def __init__(self, config, retries=5):
         self._config = config
         self._raw_data = []
-        self._locations = [{"q": city + ', British Columnbia'} for city in self._config['CITIES']]
+        self._locations = [{"q": city + ', British Columnbia, Canada'} for city in self._config['CITIES']]
         self._payloads = [{"locations": self._locations[:int(len(self._config['CITIES']) / 2)]},
                          {"locations": self._locations[int(len(self._config['CITIES']) / 2):]}]
         self.retries = retries
