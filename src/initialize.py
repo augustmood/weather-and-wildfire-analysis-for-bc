@@ -54,7 +54,7 @@ def main(weather_data_fetcher, config):
         wind_dir_at{i} TEXT, 
         cloud_at{i} INT, 
         condition_at{i} TEXT, 
-        condition_icon_id_at{i} INT,""" for i in range(24)]) + """
+        condition_icon_id_at{i} TEXT,""" for i in range(24)]) + """
         PRIMARY KEY (city, date)
     )""")
     session.execute("""
@@ -80,7 +80,7 @@ def main(weather_data_fetcher, config):
         wind_dir_at{i} TEXT, 
         cloud_at{i} INT, 
         condition_at{i} TEXT, 
-        condition_icon_id_at{i} INT,
+        condition_icon_id_at{i} TEXT,
         chance_of_rain_at{i} INT,
         chance_of_snow_at{i} INT,""" for i in range(24)]) + """
         PRIMARY KEY (city, date)
