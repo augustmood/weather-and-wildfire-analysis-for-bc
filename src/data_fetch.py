@@ -11,7 +11,7 @@ class WeatherDataExtractor:
     def __init__(self, config, retries=5):
         self._config = config
         self._raw_data = []
-        self._locations = [{"q": city + ', British Columnbia'} for city in self._config['CITIES']]
+        self._locations = [{"q": city + ', British Columnbia, Canada'} for city in self._config['CITIES']]
         self._payloads = [{"locations": self._locations[:int(len(self._config['CITIES']) / 2)]},
                          {"locations": self._locations[int(len(self._config['CITIES']) / 2):]}]
         self.retries = retries
@@ -42,7 +42,7 @@ class WeatherDataExtractor:
             input_dict['query']['current']['humidity'],
             input_dict['query']['current']['air_quality']['pm2_5'],
             input_dict['query']['current']['condition']['text'],
-            'https:'+input_dict['query']['current']['condition']['icon']
+            ('day/' if input_dict['query']['current']['is_day'] == 1 else 'night/') + input_dict['query']['current']['condition']['icon'][-7:-4]
         ]
 
     def _extract_history(self, input_dict):
@@ -56,7 +56,7 @@ class WeatherDataExtractor:
             input_dict['query']['forecast']['forecastday'][0]['day']['avgtemp_c'],
             input_dict['query']['forecast']['forecastday'][0]['day']['avghumidity'],
             input_dict['query']['forecast']['forecastday'][0]['day']['condition']['text'],
-            'https:'+input_dict['query']['forecast']['forecastday'][0]['day']['condition']['icon']
+            'day/' + input_dict['query']['forecast']['forecastday'][0]['day']['condition']['icon'][-7:-4]
         ]
         for hour in range(24):
             result.append(input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['is_day'])
@@ -67,7 +67,7 @@ class WeatherDataExtractor:
             result.append(input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['wind_dir'])
             result.append(input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['cloud'])
             result.append(input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['condition']['text'])
-            result.append('https:'+input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['condition']['icon'])
+            result.append(('day/' if input_dict['query']['forecast']['forecastday'][0]['hour'][hour] == 1 else 'night/') + input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['condition']['icon'][-7:-4])
 
         return result
         
@@ -88,7 +88,7 @@ class WeatherDataExtractor:
                 input_dict['query']['forecast']['forecastday'][day]['day']['avgtemp_c'],
                 input_dict['query']['forecast']['forecastday'][day]['day']['avghumidity'],
                 input_dict['query']['forecast']['forecastday'][day]['day']['condition']['text'],
-                'https:'+input_dict['query']['forecast']['forecastday'][day]['day']['condition']['icon'],
+                'day/' + input_dict['query']['forecast']['forecastday'][day]['day']['condition']['icon'][-7:-4],
                 input_dict['query']['forecast']['forecastday'][day]['day']['daily_chance_of_rain'],
                 input_dict['query']['forecast']['forecastday'][day]['day']['daily_chance_of_snow']
             ]
@@ -101,7 +101,7 @@ class WeatherDataExtractor:
                 result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['wind_dir'])
                 result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['cloud'])
                 result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['condition']['text'])
-                result.append('https:'+input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['condition']['icon'])
+                result.append(('day/' if input_dict['query']['forecast']['forecastday'][day]['hour'][hour] == 1 else 'night/') + input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['condition']['icon'][-7:-4])
                 result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['chance_of_rain'])
                 result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['chance_of_snow'])
         
