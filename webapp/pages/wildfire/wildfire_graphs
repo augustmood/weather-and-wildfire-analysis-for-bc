@@ -192,3 +192,5 @@ wildfire_stats_page = dcc.Tabs(
                             )],
                 style={'height':tab_height, 'borderRight': '1px solid #d6d6d6'},
                 )
+
+wildfire_graphs_page = html.Div(children=[wildfire_stats_page])

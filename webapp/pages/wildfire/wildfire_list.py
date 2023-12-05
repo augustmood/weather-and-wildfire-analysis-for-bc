@@ -51,4 +51,4 @@ dtable = dash_table.DataTable(
     },
 )
 
-dcc.Tab(label="Wildfire List", children=[dtable])
+wildfire_list_page = html.Div(children=[dtable])

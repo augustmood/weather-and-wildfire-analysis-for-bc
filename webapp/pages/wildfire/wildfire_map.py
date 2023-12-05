@@ -52,3 +52,5 @@ def open_url_in_new_tab(click_data):
             print(click_data)
             webbrowser.open_new_tab(selected_url)
     return None
+
+wildfire_map_page = html.Div(children=[wildfire_map])
