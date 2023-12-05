@@ -1,35 +1,98 @@
+from distutils.log import debug
 import dash
-import dash_labs as dl
 import dash_bootstrap_components as dbc
-import waitress
+from dash import Input, Output, dcc, html
+import plotly.express as px
+from dash_labs.plugins import register_page
+from pages import weather,wildfire
+import plotly.graph_objects as go
 
-#external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', dbc.themes.LUX]
+register_page(__name__,path="/")
 app = dash.Dash(
-    __name__, plugins=[dl.plugins.pages]#, external_stylesheets=external_stylesheets
+    __name__,external_stylesheets=[dbc.themes.BOOTSTRAP]
+)
+fig = go.Figure()
+
+# Define the layout of the app
+# the style arguments for the sidebar. We use position:fixed and a fixed width
+SIDEBAR_STYLE = {
+    "position": "fixed",
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
+    "width": "16rem",
+    "padding": "2rem 1rem",
+    "background-color": "#f8f9fa",
+}
+
+# the styles for the main content position it to the right of the sidebar and
+# add some padding.
+CONTENT_STYLE = {
+    "margin-left": "18rem",
+    "margin-right": "2rem",
+    "padding": "2rem 1rem",
+}
+
+fig.add_layout_image(
+    dict(
+        source="https://www.facebook.com/photo/?fbid=196326139284532&set=a.196326119284534.png",
+        xref="paper", yref="paper",
+        x=1, y=1.05,
+        sizex=0.2, sizey=0.2,
+        xanchor="right", yanchor="bottom"
+    )
 )
 
-navbar = dbc.NavbarSimple(
-    dbc.DropdownMenu(
+sidebar = html.Div(
+    
+        className='container',
+        children=[
+        # Image at the top
+        html.Img(src='/assets/Logo.png', className='header-image',style={'width':'100%','textAlign': 'center' }),
+
+        # html.H2(children=[
+        #             html.Img(src='https://www.facebook.com/photo/?fbid=196326139284532&set=a.196326119284534', style={'height': '50px', 'margin-right': '10px'}),
+        #             'Navigation'
+        #         ]),
+        # html.H2("Sidebar", className="display-4"),
+        html.Hr(),
+        html.P(
+            "BC Weahther and Wildfire Visualizer", className="h5"
+        ),
+        dbc.Nav(
+            [
+                dbc.NavLink("Home", href="/", active="exact"),
+                dbc.NavLink("Weather", href="/weather", active="exact"),
+                dbc.NavLink("Wildfire Dashboard", href="/wildfire", active="exact"),
+            ],
+            vertical=True,
+            pills=True,
+        ),
+    ],
+    style=SIDEBAR_STYLE,
+)
+
+content = html.Div(id="page-content", style=CONTENT_STYLE)
+
+app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
+
+@app.callback(Output("page-content", "children"), [Input("url", "pathname")])
+def render_page_content(pathname):
+    if pathname == "/":
+        return 
+    elif pathname == '/weather':
+        return weather.layout
+    elif pathname == '/wildfire':
+        return wildfire.layout
+    # If the user tries to reach a different page, return a 404 message
+    return html.Div(
         [
-            dbc.DropdownMenuItem(page["name"], href=page["path"])
-            for page in dash.page_registry.values()
-            if page["module"] != "pages.not_found_404"
+            html.H1("404: Not found", className="text-danger"),
+            html.Hr(),
+            html.P(f"The pathname {pathname} was not recognised..."),
         ],
-        nav=True,
-        label="More Pages",
-    ),
-    brand="BC WEATHER VISUALIZER",
-    brand_href="/",
-    color="primary",
-    dark=True,
-    className="mb-2",
-)
-
-app.layout = dbc.Container(
-    [navbar, dl.plugins.page_container],
-    fluid=True
-)
+        className="p-3 bg-light rounded-3",
+    )
 
 if __name__ == "__main__":
     app.run_server(debug=False)
-#    waitress.serve(app.server, listen='*:8080')
