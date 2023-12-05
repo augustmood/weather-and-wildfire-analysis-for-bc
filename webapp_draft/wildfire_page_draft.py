@@ -1,11 +1,12 @@
 # Import packages
-from dash import Dash, html, dash_table, dcc
+from dash import Dash, html, dash_table, dcc, Input, Output
 import dash
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import calendar
-
+import locale
+import webbrowser
 
 # from read_wildfire import wildfire_list_df
 # Incorporate data
@@ -185,7 +186,6 @@ def update_table(selected_graph):
         return fire_num_graph
     else:
         return html.Div("No graph to display.")
-################################################################################
 
 tab_height = '30px'
 wildfire_stats_page = dcc.Tabs(
@@ -203,6 +203,30 @@ wildfire_stats_page = dcc.Tabs(
                             )],
                 style={'height':tab_height, 'borderRight': '1px solid #d6d6d6'},
                 )
+################################################################################
+# Wildfire Map
+
+locale.setlocale(locale.LC_NUMERIC, 'en_US.UTF-8')
+map_data = wildfire
+px.set_mapbox_access_token("pk.eyJ1IjoiYnJhbmRvbmxpIiwiYSI6ImNscHJrejRvbzAwcWcya2xiNDR6bHNyMDkifQ.vd0IjbvmrKvkdpFRp9FOiw")
+map_fig = px.scatter_mapbox(map_data, lat="latitude", lon="longitude", color='fire_stat',
+                  color_continuous_scale=px.colors.cyclical.IceFire, zoom=5,
+                  custom_data=['fire_link'])
+# map_fig.update_traces(cluster=dict(enabled=True))
+
+wildfire_map = dcc.Graph(id='scatter-map', figure=map_fig,  style={'width': '1600px', 'height': '800px'})
+# Callback to open the URL in a new tab when a scatter marker is clicked
+@app.callback(
+    Output('scatter-map', 'selectedData'),
+    [Input('scatter-map', 'clickData')]
+)
+def open_url_in_new_tab(click_data):
+    if click_data:
+        selected_url = click_data['points'][0].get('customdata', None)[0]
+        if selected_url:
+            print(click_data)
+            webbrowser.open_new_tab(selected_url)
+    return None
 
 # App layout
 app.layout = html.Div([
@@ -210,11 +234,9 @@ app.layout = html.Div([
     html.Div(dcc.Tabs([
         dcc.Tab(label="Wildfire List", children=[dtable]),
         dcc.Tab(label="Wildfire Statistics", children=[wildfire_stats_page],),
-    ], className='outer-tab'),
-    # style={'background-color': 'blue'}
-    )
+        dcc.Tab(label="Wildfire Map", children=[wildfire_map])
+    ], className='outer-tab')),
 ])
-
 
 # Run the app
 if __name__ == '__main__':
