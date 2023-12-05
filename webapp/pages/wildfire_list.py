@@ -22,6 +22,9 @@ import calendar
 import locale
 import webbrowser
 
+
+register_page(__name__, path="/wildfire_list")
+
 # register_page(__name__, path="/wildfire/")
 # from read_wildfire import wildfire_list_df
 # Incorporate data
@@ -51,4 +54,4 @@ dtable = dash_table.DataTable(
     },
 )
 
-wildfire_list_page = html.Div(children=[dtable])
+layout = html.Div(children=[dtable])

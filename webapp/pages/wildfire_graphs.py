@@ -22,6 +22,8 @@ import calendar
 import locale
 import webbrowser
 
+register_page(__name__, path="/wildfire_graphs")
+
 # from read_wildfire import wildfire_list_df
 # Incorporate data
 external_stylesheets = ["style.css"]
@@ -193,4 +195,4 @@ wildfire_stats_page = dcc.Tabs(
                 style={'height':tab_height, 'borderRight': '1px solid #d6d6d6'},
                 )
 
-wildfire_graphs_page = html.Div(children=[wildfire_stats_page])
+layout = html.Div(children=[wildfire_stats_page])

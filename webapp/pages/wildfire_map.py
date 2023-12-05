@@ -22,6 +22,8 @@ import calendar
 import locale
 import webbrowser
 
+register_page(__name__, path="/wildfire_map")
+
 # from read_wildfire import wildfire_list_df
 # Incorporate data
 external_stylesheets = ["style.css"]
@@ -53,4 +55,4 @@ def open_url_in_new_tab(click_data):
             webbrowser.open_new_tab(selected_url)
     return None
 
-wildfire_map_page = html.Div(children=[wildfire_map])
+layout = html.Div(children=[wildfire_map])

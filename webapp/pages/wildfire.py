@@ -22,7 +22,6 @@ import calendar
 import locale
 import webbrowser
 
-
 register_page(__name__, path="/wildfire")
 
 # from read_wildfire import wildfire_list_df
@@ -127,7 +126,7 @@ fire_sz_pie = dcc.Graph(
             'data': [dict(labels=wildfire_by_month['Month'], values=wildfire_by_month['fire_sz_ha'], type='pie')],
             'layout': go.Layout(title='Fire Size by Month'),
         },
-        style={'float':'left', 'width':'500px', 'margin-bottom':'50px'}
+        style={'float':'left', 'width':'600px', 'margin-bottom':'50px'}
     )
 
 # Fire Size by Month: Bar Chart
@@ -137,7 +136,7 @@ fire_sz_bar = dcc.Graph(
             'data': [dict(x=wildfire_by_month['Month'], y=wildfire_by_month['fire_sz_ha'], type='bar', marker=dict(color=color_scale)),],
             'layout': go.Layout(title='Fire Size by Month', yaxis=dict(title='Count')),
         },
-        style={'float':'left', 'width':'500px', 'margin-bottom':'50px'}
+        style={'float':'left', 'width':'600px', 'margin-bottom':'50px'}
     )
 
 # Fire Size by Month Graphs
@@ -154,7 +153,7 @@ fire_num_pie = dcc.Graph(
             'data': [dict(labels=wildfire_by_month['Month'], values=wildfire_by_month['fire_num'], type='pie',legend_position='left')],
             'layout': go.Layout(title='Number of Fire by Month'),
         },
-        style={'float':'left', 'width':'500px', 'margin-bottom':'50px'}
+        style={'float':'left', 'width':'600px', 'margin-bottom':'50px'}
     )
 
 # Number of Fire by Month: Bar Chart
@@ -164,7 +163,7 @@ fire_num_bar = dcc.Graph(
             'data': [dict(x=wildfire_by_month['Month'], y=wildfire_by_month['fire_num'], type='bar', marker=dict(color=color_scale)),],
             'layout': go.Layout(title='Number of Fire by Month', yaxis=dict(title='Count')),
         },
-        style={'float':'left', 'width':'500px', 'margin-bottom':'50px'}
+        style={'float':'left', 'width':'600px', 'margin-bottom':'50px'}
     )
 
 # Number of Fire by Month Graphs
@@ -231,7 +230,7 @@ map_fig = px.scatter_mapbox(map_data, lat="latitude", lon="longitude", color='fi
                   custom_data=['fire_link'])
 # map_fig.update_traces(cluster=dict(enabled=True))
 
-wildfire_map = dcc.Graph(id='scatter-map', figure=map_fig,  style={'width': '90%', 'height': '700px'})
+wildfire_map = dcc.Graph(id='scatter-map', figure=map_fig,  style={'width': '1600px', 'height': '800px'})
 # Callback to open the URL in a new tab when a scatter marker is clicked
 @callback(
     Output('scatter-map', 'selectedData'),
@@ -254,4 +253,3 @@ layout = html.Div([
         dcc.Tab(label="Wildfire Map", children=[wildfire_map])
     ], className='outer-tab')),
 ])
-
