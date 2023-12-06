@@ -67,7 +67,7 @@ class WeatherDataExtractor:
             result.append(input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['wind_dir'])
             result.append(input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['cloud'])
             result.append(input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['condition']['text'])
-            result.append(('day/' if input_dict['query']['forecast']['forecastday'][0]['hour'][hour] == 1 else 'night/') + input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['condition']['icon'][-7:-4])
+            result.append(('day/' if input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['is_day'] == 1 else 'night/') + input_dict['query']['forecast']['forecastday'][0]['hour'][hour]['condition']['icon'][-7:-4])
 
         return result
         
@@ -101,7 +101,7 @@ class WeatherDataExtractor:
                 result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['wind_dir'])
                 result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['cloud'])
                 result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['condition']['text'])
-                result.append(('day/' if input_dict['query']['forecast']['forecastday'][day]['hour'][hour] == 1 else 'night/') + input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['condition']['icon'][-7:-4])
+                result.append(('day/' if input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['is_day'] == 1 else 'night/') + input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['condition']['icon'][-7:-4])
                 result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['chance_of_rain'])
                 result.append(input_dict['query']['forecast']['forecastday'][day]['hour'][hour]['chance_of_snow'])
         
