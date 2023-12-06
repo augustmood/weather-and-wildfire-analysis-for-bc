@@ -98,7 +98,7 @@ dtable_month = dash_table.DataTable(
 fire_sz_pie = dcc.Graph(
         id='pie-chart',
         figure={
-            'data': [dict(labels=wildfire_by_month['Month'], values=wildfire_by_month['fire_sz_ha'], type='pie', rotation=150),],
+            'data': [dict(labels=wildfire_by_month['Month'], values=wildfire_by_month['fire_sz_ha'], type='pie', rotation=260),],
             'layout': go.Layout(title='Fire Size by Month'),
         },
         style={'float':'left', 'width':'450px', 'margin-bottom':'50px'}
@@ -119,7 +119,7 @@ fire_sz_graph = html.Div([
     fire_sz_pie,
     fire_sz_bar,
     html.Div(style={'clear': 'both'})
-], style={"margin":"auto", "width": "fit-content"})
+], style={"margin":"auto", "width": "900px"})
 
 # Number of Fire by Month: Pie Chart
 
@@ -131,13 +131,6 @@ fire_num_pie = dcc.Graph(
         },
         style={'float':'left', 'width':'450px', 'margin-bottom':'50px'}
     )
-
-# fire_num_pie_fig = go.Figure(data=[go.Pie(labels=wildfire_by_month['Month'], values=wildfire_by_month['fire_num'], hole=0.5)])
-# fire_num_pie_fig.update_layout(title='Donut-Like Pie Chart')
-# fire_num_pie = dcc.Graph(
-#         id='donut-like-pie-chart',
-#         figure=fire_num_pie_fig
-#     )
 
 
 # Number of Fire by Month: Bar Chart
@@ -172,7 +165,7 @@ monthly_graph = html.Div([
     html.Div(style={'clear': 'both'}),
     html.Div(id='graph-container')
 ],
-style={'width':'fit-content', 'margin': 'auto'})
+style={'width':'1000px', 'margin': 'auto'})
 
 # Callback to update the table based on the selected radio item
 @callback(
