@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 from dash import Input, Output, dcc, html
 import plotly.express as px
 from dash_labs.plugins import register_page
-from pages import weather, wildfire_list, wildfire_graphs, wildfire_map
+from pages import weather_map, wildfire_list, wildfire_graphs, wildfire_map
 import plotly.graph_objects as go
 
 register_page(__name__,path="/")
@@ -54,9 +54,18 @@ sidebar = html.Div(
         ),
         dbc.Nav(
             [
-                dbc.NavLink("Home", href="/", active="exact"),
-                dbc.NavLink("Weather", href="/weather", active="exact"),
+                # dbc.NavLink("Home", href="/", active="exact"),
+                # dbc.NavLink("Weather", href="/weather", active="exact"),
                 # dbc.NavLink("Wildfire Dashboard", href="/wildfire", active="exact"),
+                dbc.DropdownMenu(
+                    children=[
+                        dbc.DropdownMenuItem("Table", href="/"),
+                        dbc.DropdownMenuItem("Map", href="/weather_map"),
+                    ],
+                    nav=True,
+                    in_navbar=True,
+                    label="Weather Dashboard",
+                ),
                 dbc.DropdownMenu(
                     children=[
                         dbc.DropdownMenuItem("Table", href="/wildfire_list"),
@@ -84,8 +93,8 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 def render_page_content(pathname):
     if pathname == "/":
         return 
-    elif pathname == '/weather':
-        return weather.layout
+    elif pathname == '/weather_map':
+        return weather_map.layout
     elif pathname == '/wildfire_list':
         return wildfire_list.layout
     elif pathname == '/wildfire_graphs':

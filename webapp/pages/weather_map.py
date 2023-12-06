@@ -8,7 +8,7 @@ import plotly.express as px
 from dash_labs.plugins import register_page
 from dash.exceptions import PreventUpdate
 
-register_page(__name__, path="/weather")
+register_page(__name__, path="/weather_map")
 
 main_page = html.Div(
     className="row app-body",
