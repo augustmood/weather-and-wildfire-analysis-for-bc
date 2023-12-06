@@ -8,6 +8,7 @@ import numpy as np
 from shapely.wkt import dumps, loads
 import zipfile
 from simpledbf import Dbf5
+import pandas as pd
 
 # function to transfer EPSG: 3005 Geographic coordinates to EPSG 4326 Coordinates.
 
@@ -53,42 +54,51 @@ def extract_zip(zip_file_path, extract_path):
 # create table wildfire(fire_num text PRIMARY KEY, coordinates list<decimal>, geometry text);
 
 def main():
+    # important
+    pd.DataFrame.iteritems = pd.DataFrame.items
+
     # Specify the path to your shapefile (without the file extension)
-    zip_file_path = 'prot_current_fire_polys.zip'
-    extract_path = ''
+    zip_file_path = './local_download/prot_current_fire_polys.zip'
+    extract_path = './local_download/prot_current_fire_polys'
     extract_zip(zip_file_path, extract_path)
-    shapefile_path = 'prot_current_fire_polys/prot_current_fire_polys.shp'
+    shapefile_path = './local_download/prot_current_fire_polys/prot_current_fire_polys.shp'
     # Read the shapefile into a GeoDataFrame
     gdf = gpd.read_file(shapefile_path)
-    # gdf = gpd.read_file(shapefile_path + '.shp')
-    # Extract Only FIRE_NUM & geometry
     locations = gdf[['FIRE_NUM', 'geometry']]
     locations["coordinates"] = locations["geometry"] \
     .apply(lambda x: coord_converter(avg_coord(poly_converter(x))))
-    locations["geometry"] = locations["geometry"].apply(lambda x: dumps(x))
-    # locations["geometry"] = locations["geometry"] \
-    # .apply(lambda x: coord_converter(avg_coord(poly_converter(x))))
-    locations_df = spark.createDataFrame(locations).repartition(50)
+    locations = locations.drop('geometry', axis=1)
+    # locations["geometry"] = locations["geometry"].apply(lambda x: dumps(x))
+    locations_df = spark.createDataFrame(locations).repartition(100)
     locations_df = locations_df.withColumnRenamed("FIRE_NUM", "fire_num")
-    locations_df.show(10)
 
-    dbf = Dbf5('prot_current_fire_polys.dbf') 
+
+
+    dbf = Dbf5('./local_download/prot_current_fire_polys/prot_current_fire_polys.dbf') 
     wildfire = dbf.to_dataframe()
     wildfire.columns = map(str.lower, wildfire.columns)
-    wildfire_df = spark.createDataFrame(wildfire)
+    wildfire["fire_stat"] = wildfire["fire_stat"].apply(lambda x: str(x))
+    wildfire["fire_link"] = wildfire["fire_link"].apply(lambda x: str(x))
+    wildfire_df = spark.createDataFrame(wildfire).repartition(100)
     wildfire_df = wildfire_df.withColumnRenamed("FIRE_NUM", "fire_num")
-    wildfire_df.show(10)
-
     join_cond = [locations_df.fire_num == wildfire_df.fire_num]
-    wildfire_table = wildfire_df.join(locations_df, join_cond).drop(locations_df.fire_num)
-    wildfire_table.show(10)
-    # We may change the code below to set the keyspace from the config.yaml file.
-    wildfire_table.write.format("org.apache.spark.sql.cassandra").mode("overwrite")\
-        .option("confirm.truncate", "true").options(table='wildfire', keyspace='bla175').save()
+    wildfire_table = wildfire_df.join(locations_df, join_cond)\
+        .drop(locations_df.fire_num)
+    
+    wildfire_table = wildfire_table
+    wildfire_table.write.format("org.apache.spark.sql.cassandra")\
+        .options(table='wildfire', keyspace='bla175')\
+    .mode("append").save()
 
 if __name__ == '__main__':
-    cluster_seeds = ['node1.local', 'node2.local']
-    spark = SparkSession.builder.appName('Load Wild Fire Data with Location').config('spark.cassandra.connection.host', ','.join(cluster_seeds)).getOrCreate()
+    spark = SparkSession.builder \
+        .appName("Load Wild Fire Data") \
+        .config("spark.cassandra.connection.host", "cassandra.us-west-2.amazonaws.com") \
+        .config("spark.cassandra.connection.port", "9142") \
+        .config("spark.cassandra.connection.ssl.enabled", "true") \
+        .config("spark.cassandra.auth.username", "bin-ming-at-872464001298") \
+        .config("spark.cassandra.auth.password", "O7k1jKqgvzG+Fbw2EsM7HGN8Pc0tEMYMWqr/cgrj3kI=") \
+        .getOrCreate()
     assert spark.version >= '3.0' # make sure we have Spark 3.0+
     spark.sparkContext.setLogLevel('WARN')
     sc = spark.sparkContext
