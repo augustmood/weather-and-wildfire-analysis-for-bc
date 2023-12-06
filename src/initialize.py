@@ -1,7 +1,7 @@
 import time, yaml
 from datetime import datetime
 from data_fetch import WeatherDataExtractor
-from cassandra import ConsistencyLevel
+from cassandra import ConsistencyLevel, BatchType
 from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement
 
@@ -89,7 +89,7 @@ def main(weather_data_fetcher, config):
     cols = str(tuple(config['HISTORY_COLUMNS'])).replace("'","")
     val_replace = f"({'?, '*(len(config['HISTORY_COLUMNS'])-1)}?)"
 
-    batch = BatchStatement()
+    batch = BatchStatement(consistency_level=ConsistencyLevel.ONE, batch_type=BatchType.UNLOGGED)
     batch_count = 0
     insert_history = session.prepare(f"INSERT INTO history_weather {cols} VALUES {val_replace}")
 
