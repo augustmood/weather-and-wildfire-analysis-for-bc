@@ -111,7 +111,7 @@ fire_sz_bar = dcc.Graph(
             'data': [dict(x=wildfire_by_month['Month'], y=wildfire_by_month['fire_sz_ha'], type='bar', marker=dict(color=color_scale)),],
             'layout': go.Layout(title='Fire Size by Month', yaxis=dict(title='Count')),
         },
-        style={'float':'left', 'width':'450px', 'margin-bottom':'50px'}
+        style={'float':'right', 'width':'450px', 'margin-bottom':'50px'}
     )
 
 # Fire Size by Month Graphs
@@ -204,4 +204,4 @@ wildfire_stats_page = dcc.Tabs(
                 style={'height':tab_height, 'borderRight': '1px solid #d6d6d6'},
                 )
 
-layout = html.Div(children=[wildfire_stats_page])
+layout = html.Div(children=[wildfire_stats_page], style={'min-width':'100%'})
