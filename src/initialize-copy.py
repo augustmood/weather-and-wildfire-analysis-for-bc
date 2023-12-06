@@ -1,18 +1,14 @@
 import time, yaml
 from datetime import datetime
 from data_fetch import WeatherDataExtractor
-from cassandra import ConsistencyLevel, BatchType
+from cassandra import ConsistencyLevel
 from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement
 from cassandra.cluster import Cluster
 from ssl import SSLContext, PROTOCOL_TLSv1_2 , CERT_REQUIRED
 from cassandra.auth import PlainTextAuthProvider
+from cassandra.cqlengine.query import BatchType
 
-ssl_context = SSLContext(PROTOCOL_TLSv1_2 )
-ssl_context.load_verify_locations('./sf-class2-root.crt')
-ssl_context.verify_mode = CERT_REQUIRED
-auth_provider = PlainTextAuthProvider(username='bin-ming-at-872464001298', password='O7k1jKqgvzG+Fbw2EsM7HGN8Pc0tEMYMWqr/cgrj3kI=')
-cluster = Cluster(['cassandra.us-west-2.amazonaws.com'], ssl_context=ssl_context, auth_provider=auth_provider, port=9142)
 
 def main(weather_data_fetcher, config):
 
@@ -102,7 +98,7 @@ def main(weather_data_fetcher, config):
     cols = str(tuple(config['HISTORY_COLUMNS'])).replace("'","")
     val_replace = f"({'?, '*(len(config['HISTORY_COLUMNS'])-1)}?)"
 
-    batch = BatchStatement(consistency_level=ConsistencyLevel.ONE, batch_type=BatchType.UNLOGGED)
+    batch = BatchStatement(consistency_level=ConsistencyLevel.ONE, batch_type=BatchType.Unlogged)
     batch_count = 0
     insert_history = session.prepare(f"INSERT INTO history_weather {cols} VALUES {val_replace}")
 
