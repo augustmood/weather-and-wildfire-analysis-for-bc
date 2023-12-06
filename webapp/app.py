@@ -1,7 +1,7 @@
 from distutils.log import debug
 import dash
 import dash_bootstrap_components as dbc
-from dash import Input, Output, dcc, html
+from dash import Input, Output, dcc, html, State
 import plotly.express as px
 from dash_labs.plugins import register_page
 from pages import weather_map, wildfire_list, wildfire_graphs, wildfire_map
@@ -23,7 +23,6 @@ SIDEBAR_STYLE = {
     "width": "16rem",
     "padding": "2rem 1rem",
     "background-color": "#f8f9fa",
-    "zIndex" : "10000"
 }
 
 # the styles for the main content position it to the right of the sidebar and
@@ -44,50 +43,109 @@ fig.add_layout_image(
     )
 )
 
-sidebar = html.Div(
-        className='container',
-        children=[
-        # Image at the top
-        html.Img(src='/assets/Logo.png', className='header-image',style={'width':'100%','textAlign': 'center' }),
+
+
+submenu_1 = [
+    html.Div(
+        # use Row and Col components to position the chevrons
+        html.Div(    #Screen is split in rows and columns. This is the first row with 2 columns
+            children=[
+                html.Div("Weather", style={'widht': '6rem', 'float': 'left'}),
+                html.Div(
+                    html.Img(src='/assets/arrow-down-sign-to-navigate.png', style={'height': '1em'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
+                ),
+                html.Div(style={"clear": "both"})
+            ],
+        ),
+        id="submenu-1",
+        style={"width":"12.5rem", "margin":"auto", "margin-bottom":"2rem"}
+    ),
+
+    dbc.Collapse(
+        [
+            dbc.NavLink("Table", href="/"),
+            dbc.NavLink("Map", href="/weather_map"),
+        ],
+        id="submenu-1-collapse"
+    ),
+]
+
+submenu_2 = [
+html.Div(
+        # use Row and Col components to position the chevrons
+        html.Div(    #Screen is split in rows and columns. This is the first row with 2 columns
+            children=[
+                html.Div("Wildfire", style={'widht': '6rem', 'float': 'left'}),
+                html.Div(
+                    html.Img(src='/assets/arrow-down-sign-to-navigate.png', style={'height': '1em'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
+                ),
+                html.Div(style={"clear": "both"})
+            ],
+        ),
+        id="submenu-2",
+        style={"width":"12.5rem", "margin":"auto"}
+    ),
+
+    dbc.Collapse(
+        [
+            dbc.NavLink("Table", href="/wildfire_list"),
+            dbc.NavLink("Graphs", href="/wildfire_graphs"),
+            dbc.NavLink("Map", href="/wildfire_map"),
+        ],
+        id="submenu-2-collapse"
+    ),
+]
+
+
+navbar = html.Div(
+    [
+        html.A(
+            [
+                html.Img(src='/assets/Logo.png', className='header-image',
+                         style={'width': '100%', 'textAlign': 'center'})
+            ],href='/home'
+        ),
+        html.Div(
+            "BC Weahther and Wildfire Visualizer", className="h5",
+            style={"width":"10rem", "margin": "auto"}
+        ),
         html.Hr(),
         html.P(
-            "BC Weahther and Wildfire Visualizer", className="h5"
+            "", className="lead"
         ),
-        dbc.Nav(
-            [
-                # dbc.NavLink("Home", href="/", active="exact"),
-                # dbc.NavLink("Weather", href="/weather", active="exact"),
-                # dbc.NavLink("Wildfire Dashboard", href="/wildfire", active="exact"),
-                dbc.DropdownMenu(
-                    children=[
-                        dbc.DropdownMenuItem("Table", href="/"),
-                        dbc.DropdownMenuItem("Map", href="/weather_map"),
-                    ],
-                    nav=True,
-                    in_navbar=True,
-                    label="Weather Dashboard",
-                ),
-                dbc.DropdownMenu(
-                    children=[
-                        dbc.DropdownMenuItem("Table", href="/wildfire_list"),
-                        dbc.DropdownMenuItem("Graphs", href="/wildfire_graphs"),
-                        dbc.DropdownMenuItem("Map", href="/wildfire_map"),
-                    ],
-                    nav=True,
-                    in_navbar=True,
-                    label="Wildfire Dashboard",
-                ),
-            ],
-            vertical=True,
-            pills=True,
-        ),
+        dbc.Nav(submenu_1 + submenu_2, vertical=True, style={"width":"14rem", "margin": "auto"}),
     ],
     style=SIDEBAR_STYLE,
+    id="sidebar",
 )
 
 content = html.Div(id="page-content", style=CONTENT_STYLE)
 
-app.layout = html.Div([dcc.Location(id="url"), sidebar, content], style={"overflow-x": "auto", "overflow-y": "auto",})
+app.layout = html.Div([dcc.Location(id="url"), navbar, content])
+
+
+def toggle_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+
+def set_navitem_class(is_open):
+    if is_open:
+        return "open"
+    return ""
+
+for i in [1, 2]:
+    app.callback(
+        Output(f"submenu-{i}-collapse", "is_open"),
+        [Input(f"submenu-{i}", "n_clicks")],
+        [State(f"submenu-{i}-collapse", "is_open")],
+    )(toggle_collapse)
+
+    app.callback(
+        Output(f"submenu-{i}", "className"),
+        [Input(f"submenu-{i}-collapse", "is_open")],
+    )(set_navitem_class)
+
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 
