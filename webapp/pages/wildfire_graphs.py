@@ -98,10 +98,10 @@ dtable_month = dash_table.DataTable(
 fire_sz_pie = dcc.Graph(
         id='pie-chart',
         figure={
-            'data': [dict(labels=wildfire_by_month['Month'], values=wildfire_by_month['fire_sz_ha'], type='pie')],
+            'data': [dict(labels=wildfire_by_month['Month'], values=wildfire_by_month['fire_sz_ha'], type='pie', rotation=150),],
             'layout': go.Layout(title='Fire Size by Month'),
         },
-        style={'float':'left', 'width':'500px', 'margin-bottom':'50px'}
+        style={'float':'left', 'width':'450px', 'margin-bottom':'50px'}
     )
 
 # Fire Size by Month: Bar Chart
@@ -111,7 +111,7 @@ fire_sz_bar = dcc.Graph(
             'data': [dict(x=wildfire_by_month['Month'], y=wildfire_by_month['fire_sz_ha'], type='bar', marker=dict(color=color_scale)),],
             'layout': go.Layout(title='Fire Size by Month', yaxis=dict(title='Count')),
         },
-        style={'float':'left', 'width':'500px', 'margin-bottom':'50px'}
+        style={'float':'left', 'width':'450px', 'margin-bottom':'50px'}
     )
 
 # Fire Size by Month Graphs
@@ -122,14 +122,23 @@ fire_sz_graph = html.Div([
 ], style={"margin":"auto", "width": "fit-content"})
 
 # Number of Fire by Month: Pie Chart
+
 fire_num_pie = dcc.Graph(
         id='pie-chart',
         figure={
-            'data': [dict(labels=wildfire_by_month['Month'], values=wildfire_by_month['fire_num'], type='pie',legend_position='left')],
+            'data': [dict(labels=wildfire_by_month['Month'], values=wildfire_by_month['fire_num'], type='pie', rotation=200)],
             'layout': go.Layout(title='Number of Fire by Month'),
         },
-        style={'float':'left', 'width':'500px', 'margin-bottom':'50px'}
+        style={'float':'left', 'width':'450px', 'margin-bottom':'50px'}
     )
+
+# fire_num_pie_fig = go.Figure(data=[go.Pie(labels=wildfire_by_month['Month'], values=wildfire_by_month['fire_num'], hole=0.5)])
+# fire_num_pie_fig.update_layout(title='Donut-Like Pie Chart')
+# fire_num_pie = dcc.Graph(
+#         id='donut-like-pie-chart',
+#         figure=fire_num_pie_fig
+#     )
+
 
 # Number of Fire by Month: Bar Chart
 fire_num_bar = dcc.Graph(
@@ -138,7 +147,7 @@ fire_num_bar = dcc.Graph(
             'data': [dict(x=wildfire_by_month['Month'], y=wildfire_by_month['fire_num'], type='bar', marker=dict(color=color_scale)),],
             'layout': go.Layout(title='Number of Fire by Month', yaxis=dict(title='Count')),
         },
-        style={'float':'left', 'width':'500px', 'margin-bottom':'50px'}
+        style={'float':'right', 'width':'450px', 'margin-bottom':'50px'}
     )
 
 # Number of Fire by Month Graphs
@@ -146,7 +155,7 @@ fire_num_graph = html.Div([
     fire_num_pie,
     fire_num_bar,
     html.Div(style={'clear': 'both'})
-], style={"margin":"auto", "width": "fit-content"})
+], style={"margin":"auto", "width": "1000px"})
 
 
 monthly_graph = html.Div([
