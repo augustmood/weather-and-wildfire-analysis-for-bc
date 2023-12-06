@@ -52,13 +52,13 @@ submenu_1 = [
             children=[
                 html.Div("Weather", style={'widht': '6rem', 'float': 'left'}),
                 html.Div(
-                    html.Img(src='/assets/arrow-down-sign-to-navigate.png', style={'height': '1em'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
+                    html.Img(src='/assets/arrow-down-sign-to-navigate.png', style={'width': '1em','height': '1em'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
                 ),
                 html.Div(style={"clear": "both"})
             ],
         ),
         id="submenu-1",
-        style={"width":"12.5rem", "margin":"auto", "margin-bottom":"2rem"}
+        style={"width":"12.5rem", "margin":"auto", "margin-bottom":"5px"}
     ),
 
     dbc.Collapse(
@@ -77,13 +77,13 @@ html.Div(
             children=[
                 html.Div("Wildfire", style={'widht': '6rem', 'float': 'left'}),
                 html.Div(
-                    html.Img(src='/assets/arrow-down-sign-to-navigate.png', style={'height': '1em'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
+                    html.Img(src='/assets/arrow-down-sign-to-navigate.png', style={'width' : '1em', 'height': '1em'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
                 ),
                 html.Div(style={"clear": "both"})
             ],
         ),
         id="submenu-2",
-        style={"width":"12.5rem", "margin":"auto"}
+        style={"width":"12.5rem", "margin":"auto", "margin-bottom":"5px"}
     ),
 
     dbc.Collapse(
