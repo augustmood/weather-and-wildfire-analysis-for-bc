@@ -23,6 +23,7 @@ SIDEBAR_STYLE = {
     "width": "16rem",
     "padding": "2rem 1rem",
     "background-color": "#f8f9fa",
+    "zIndex" : "10000"
 }
 
 # the styles for the main content position it to the right of the sidebar and
@@ -86,7 +87,7 @@ sidebar = html.Div(
 
 content = html.Div(id="page-content", style=CONTENT_STYLE)
 
-app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
+app.layout = html.Div([dcc.Location(id="url"), sidebar, content], style={"overflow-x": "auto", "overflow-y": "auto",})
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 

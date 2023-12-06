@@ -42,7 +42,7 @@ pie_fig = dcc.Graph(
             'data': [dict(labels=pie_df.index, values=pie_df, type='pie')],
             'layout': go.Layout(title='Fire Control Stage'),
         },
-        style={'float':'left', 'width':'500px'}
+        style={'float':'left', 'width':'45%'}
     )
 
 # Stage of Control: Bar Chart
@@ -53,7 +53,7 @@ bar_fig = dcc.Graph(
             'data': [dict(x=pie_df.index, y=pie_df, type='bar', marker=dict(color=color_scale)),],
             'layout': go.Layout(title='Fire Control Stage', xaxis=dict(title='Stage of Control'), yaxis=dict(title='Count')),
         },
-        style={'float':'left', 'width':'500px'}
+        style={'float':'right', 'width':'45%'}
     )
 
 # Stage of Control Graphs
@@ -61,7 +61,7 @@ stage = html.Div([
     bar_fig,
     pie_fig,
     html.Div(style={'clear': 'both'})
-], style={"margin":"auto", "width": "fit-content"})
+], style={"margin":"auto", "width": "900px"})
 
 ################################################################################
 ## Analysis By Month
