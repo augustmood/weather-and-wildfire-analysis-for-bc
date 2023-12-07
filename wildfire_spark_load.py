@@ -9,6 +9,7 @@ from shapely.wkt import dumps, loads
 import zipfile
 from simpledbf import Dbf5
 import pandas as pd
+from pyspark import SparkConf
 
 # function to transfer EPSG: 3005 Geographic coordinates to EPSG 4326 Coordinates.
 
@@ -72,14 +73,14 @@ def main():
     locations_df = spark.createDataFrame(locations).repartition(100)
     locations_df = locations_df.withColumnRenamed("FIRE_NUM", "fire_num")
 
-
-
     dbf = Dbf5('./local_download/prot_current_fire_polys/prot_current_fire_polys.dbf') 
     wildfire = dbf.to_dataframe()
     wildfire.columns = map(str.lower, wildfire.columns)
     wildfire["fire_stat"] = wildfire["fire_stat"].apply(lambda x: str(x))
     wildfire["fire_link"] = wildfire["fire_link"].apply(lambda x: str(x))
     wildfire_df = spark.createDataFrame(wildfire).repartition(100)
+
+
     wildfire_df = wildfire_df.withColumnRenamed("FIRE_NUM", "fire_num")
     join_cond = [locations_df.fire_num == wildfire_df.fire_num]
     wildfire_table = wildfire_df.join(locations_df, join_cond)\
@@ -91,6 +92,9 @@ def main():
     .mode("append").save()
 
 if __name__ == '__main__':
+    conf = SparkConf()
+    # conf.set("spark.jars.packages", "com.datastax.spark:spark-cassandra-connector_2.12:3.4.0")
+    conf.set("spark.sql.extensions", "com.datastax.spark.connector.CassandraSparkExtensions")
     spark = SparkSession.builder \
         .appName("Load Wild Fire Data") \
         .config("spark.cassandra.connection.host", "cassandra.us-west-2.amazonaws.com") \
@@ -98,6 +102,7 @@ if __name__ == '__main__':
         .config("spark.cassandra.connection.ssl.enabled", "true") \
         .config("spark.cassandra.auth.username", "bin-ming-at-872464001298") \
         .config("spark.cassandra.auth.password", "O7k1jKqgvzG+Fbw2EsM7HGN8Pc0tEMYMWqr/cgrj3kI=") \
+        .config(conf=conf)\
         .getOrCreate()
     assert spark.version >= '3.0' # make sure we have Spark 3.0+
     spark.sparkContext.setLogLevel('WARN')

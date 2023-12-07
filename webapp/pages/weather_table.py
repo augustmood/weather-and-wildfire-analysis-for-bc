@@ -213,8 +213,9 @@ def hour_level(df, city, date, data_type='history'):
         return hour_chart(temp_df, city, date, 'forecast'), hour_chart_wind_cloud(temp_df, city, date), hour_chart_rain_snow(temp_df, city, date)
 
 dropdown_style = {"position": "relative", "top": "20px", "left": "0px", "width": "20%", "zIndex": "100000"}
-day_chart_style = {"position": "relative", "width": "960px", "margin":"auto"}
-dropdown_style2 = {"float": "right", "width": "200px", "zIndex": "100000"}
+day_chart_style = {"width": "960px", "margin":"auto"}
+dropdown_style2 = {"width": "200px"}
+# dropdown_style2 = {"position": "relative", "top": "20px", "left": "0px", "width": "20%", "zIndex": "100000"}
 
 history_tab = html.Div(children=[
     html.Div([dcc.Dropdown(list(df_history.city.unique()), placeholder="Select a city...", id='history-city-dropdown')],
@@ -252,8 +253,8 @@ def history_tab_update(value):
                  style=day_chart_style),
         html.Div(style={"clear": "both"}),
         html.Div(
-            dcc.Dropdown(list(df_history.date.unique()), placeholder="Select a date...", id='history-city-day-dropdown',
-                         style=dropdown_style2)),
+            dcc.Dropdown(list(df_history.date.unique()), placeholder="Select a date...", id='history-city-day-dropdown', style=dropdown_style2),
+                         style={"float":"right", "width":"fit-content"}),
         html.Div(style={"clear": "both"}),
         html.Div(children=[], id="history-city-day-dropdown-data")
     ])
@@ -285,7 +286,8 @@ def forecast_tab_update(value):
         html.Div(style={"clear": "both"}),
         html.Div(
             dcc.Dropdown(list(df_forecast.date.unique()), placeholder="Select a date...", id='forecast-city-day-dropdown',
-                         style=dropdown_style2)),
+                         style=dropdown_style2),
+                         style={"float":"right", "width":"fit-content"}),
         html.Div(style={"clear": "both"}),
         html.Div(children=[], id="forecast-city-day-dropdown-data")
     ])

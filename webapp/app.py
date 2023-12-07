@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 from dash import Input, Output, dcc, html, State
 import plotly.express as px
 from dash_labs.plugins import register_page
-from pages import weather_map, wildfire_list, wildfire_graphs, wildfire_map
+from pages import weather_table, weather_map, wildfire_list, wildfire_graphs, wildfire_map
 import plotly.graph_objects as go
 
 register_page(__name__,path="/")
@@ -63,7 +63,7 @@ submenu_1 = [
 
     dbc.Collapse(
         [
-            dbc.NavLink("Table", href="/"),
+            dbc.NavLink("Table", href="/weather_table"),
             dbc.NavLink("Map", href="/weather_map"),
         ],
         id="submenu-1-collapse"
@@ -153,6 +153,8 @@ def render_page_content(pathname):
     if pathname == "/":
         pathname = '/weather_map'
         return render_page_content(pathname)
+    elif pathname == '/weather_map':
+        return weather_table.layout
     elif pathname == '/weather_map':
         return weather_map.layout
     elif pathname == '/wildfire_list':
