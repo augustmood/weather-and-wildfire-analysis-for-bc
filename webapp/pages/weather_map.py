@@ -20,7 +20,7 @@ df = pd.read_csv('current_weather.csv')
 cities = [eval(i) for i in df.json.to_list()]
 # Generate geojson with a marker for each country and name as tooltip.
 geojson = dlx.dicts_to_geojson(
-    [{**c, **dict(tooltip=c['city'] + ', <b>' + str(c['condition']) + '°C<b/>' + ', <b>' + str(c['temp_c'])[0:4] + '°C<b/>')} for c in cities])
+    [{**c, **dict(tooltip=c['city'] + ', <b>' + c['condition'] + '<b/>' + ', <b>' + str(c['temp_c'])[0:4] + '°C<b/>')} for c in cities])
 # Create javascript function that draws a marker with a custom icon.
 draw_flag = assign("""function(feature, latlng){
 const weather_flag = L.icon({iconUrl: `./assets/64x64/${feature.properties.condition_icon_id}.png`, iconSize: [64, 64]});
