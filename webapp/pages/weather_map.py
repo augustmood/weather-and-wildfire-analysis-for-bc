@@ -33,14 +33,14 @@ eventHandlers = dict(
 
 
 def get_info(feature=None):
-    header_style = {"fontFamily": "inconsolata", "text-align": "center", "fontSize": "24px", "fontWeight": "bold"}
-    text_style = {"fontFamily": "inconsolata", "text-align": "center", "fontSize": "18px", "margin-top":"20px"}
-    line_style = {"fontFamily": "inconsolata", "display": "inline-block", "fontWeight": "bold"}
-    item_style = {"fontFamily": "inconsolata", "display": "inline-block","float": "right"}
+    header_style = {"fontFamily": "Consolas, monaco, monospace", "text-align": "center", "fontSize": "24px", "fontWeight": "bold"}
+    text_style = {"fontFamily": "Consolas, monaco, monospace", "text-align": "center", "fontSize": "18px", "margin-top":"20px"}
+    line_style = {"fontFamily": "Consolas, monaco, monospace", "display": "inline-block", "fontWeight": "bold"}
+    item_style = {"fontFamily": "Consolas, monaco, monospace", "display": "inline-block","float": "right"}
     header = [html.Div("Current Weather", style=header_style)]
     if not feature:
         return header + [
-            html.Div(html.B('?'), style={"text-align": "center", "fontFamily": "inconsolata", "fontSize": "128px"}),
+            html.Div(html.B('?'), style={"text-align": "center", "fontFamily": "Consolas, monaco, monospace", "fontSize": "128px"}),
             html.P("Select a city", style=text_style)]
     return [
         html.Div(feature["properties"]["city"], style=header_style), html.Br(),
@@ -56,7 +56,10 @@ def get_info(feature=None):
             html.Div(str(feature["properties"]["wind_kph"])+" km / h", style=item_style)]),
         html.Div([
             html.B("Wind Degree:", style=line_style),
-            html.Div(str(feature["properties"]["wind_degree"])+" km / h", style=item_style)]),
+            html.Div(str(feature["properties"]["wind_degree"])+"°", style=item_style)]),
+        html.Div([
+            html.B("Wind Direction:", style=line_style),
+            html.Div(feature["properties"]["wind_dir"], style=item_style)]),
         html.Div([
             html.B("Cloud Cover:", style=line_style),
             html.Div(str(feature["properties"]["cloud"])+"%", style=item_style)]),
