@@ -16,7 +16,7 @@ def main():
     wildfire_pd["longitude"] = wildfire_pd["longitude"].apply(lambda x: round(float(x), 3))
     wildfire_pd["latitude"] = wildfire_pd["latitude"].apply(lambda x: round(float(x), 3))
     wildfire_pd["coordinate"] = wildfire_pd.apply(lambda x: [x['longitude'], x['latitude']], axis=1)
-    # wildfire_pd.to_csv('wildfire.csv', index=False)
+
 
 if __name__ == '__main__':
     spark = SparkSession.builder \

@@ -50,9 +50,9 @@ submenu_1 = [
         # use Row and Col components to position the chevrons
         html.Div(    #Screen is split in rows and columns. This is the first row with 2 columns
             children=[
-                html.Div("Weather", style={'widht': '6rem', 'float': 'left'}),
+                html.Div("Weather", style={'widht': '6rem', 'float': 'left', 'cursor' : 'default'}),
                 html.Div(
-                    html.Img(src='/assets/arrow-down-sign-to-navigate.png', style={'width': '1em','height': '1em'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
+                    html.Img(src='/assets/arrow-down-sign-to-navigate.png', style={'width': '1em','height': '1em', 'cursor' : 'pointer'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
                 ),
                 html.Div(style={"clear": "both"})
             ],
@@ -75,9 +75,9 @@ html.Div(
         # use Row and Col components to position the chevrons
         html.Div(    #Screen is split in rows and columns. This is the first row with 2 columns
             children=[
-                html.Div("Wildfire", style={'widht': '6rem', 'float': 'left'}),
+                html.Div("Wildfire", style={'widht': '6rem', 'float': 'left', 'cursor' : 'default'}),
                 html.Div(
-                    html.Img(src='/assets/arrow-down-sign-to-navigate.png', style={'width' : '1em', 'height': '1em'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
+                    html.Img(src='/assets/arrow-down-sign-to-navigate.png', style={'width' : '1em', 'height': '1em', 'cursor' : 'pointer'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
                 ),
                 html.Div(style={"clear": "both"})
             ],
@@ -151,7 +151,8 @@ for i in [1, 2]:
 
 def render_page_content(pathname):
     if pathname == "/":
-        return 
+        pathname = '/weather_map'
+        return render_page_content(pathname)
     elif pathname == '/weather_map':
         return weather_map.layout
     elif pathname == '/wildfire_list':

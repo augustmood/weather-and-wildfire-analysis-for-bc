@@ -36,8 +36,8 @@ wildfire_list = wildfire[["fire_num", "fire_sz_ha", "load_date", "fire_stat", "c
 locale.setlocale(locale.LC_NUMERIC, 'en_US.UTF-8')
 map_data = wildfire
 px.set_mapbox_access_token("pk.eyJ1IjoiYnJhbmRvbmxpIiwiYSI6ImNscHJrejRvbzAwcWcya2xiNDR6bHNyMDkifQ.vd0IjbvmrKvkdpFRp9FOiw")
-map_fig = px.scatter_mapbox(map_data, lat="latitude", lon="longitude", color='fire_stat',
-                  color_continuous_scale=px.colors.cyclical.IceFire, zoom=5,
+map_fig = px.scatter_mapbox(map_data, lat="latitude", lon="longitude", color='fire_stat', hover_name="fire_num",
+                  color_continuous_scale=px.colors.cyclical.IceFire, zoom=5, 
                   custom_data=['fire_link'])
 # map_fig.update_traces(cluster=dict(enabled=True))
 
