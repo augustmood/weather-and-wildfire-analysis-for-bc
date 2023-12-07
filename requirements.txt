@@ -13,6 +13,3 @@ utils
 dash_bootstrap_components
 waitress
 dash_daq
-dash_extensions
-dash-leaflet
-dash_labs
