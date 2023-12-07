@@ -21,13 +21,16 @@ import plotly.graph_objects as go
 import calendar
 import locale
 import webbrowser
+import sys
+sys.path.append('./')
+from wildfire_data_provider import WildfireDataExtractor
 
 register_page(__name__, path="/wildfire_graphs")
 
 # from read_wildfire import wildfire_list_df
 # Incorporate data
 external_stylesheets = ["style.css"]
-wildfire = pd.read_csv("wildfire.csv")
+wildfire = WildfireDataExtractor().fetch_wildfire()
 wildfire_list = wildfire[["fire_num", "fire_sz_ha", "load_date", "fire_stat", "coordinate"]]
 
 # Color Scale
@@ -70,8 +73,9 @@ stage = html.Div([
 
 
 wildfire_by_month = wildfire_list
+print(wildfire_list['load_date'])
 wildfire_by_month['Month'] = wildfire_list['load_date']\
-    .apply(lambda x: calendar.month_name[int(x.split('-')[1])])
+    .apply(lambda x: calendar.month_name[x.month])
 wildfire_by_month = wildfire_by_month.groupby('Month').agg({'fire_sz_ha': 'sum', 'fire_num': 'count'}).reset_index()
 all_months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 all_months_df = pd.DataFrame({'Month': all_months})

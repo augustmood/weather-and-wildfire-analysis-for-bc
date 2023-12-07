@@ -21,15 +21,14 @@ import plotly.graph_objects as go
 import calendar
 import locale
 import webbrowser
-
+import sys
+sys.path.append('./')
+from wildfire_data_provider import WildfireDataExtractor
 
 register_page(__name__, path="/wildfire_list")
 
-# register_page(__name__, path="/wildfire/")
-# from read_wildfire import wildfire_list_df
-# Incorporate data
 external_stylesheets = ["style.css"]
-wildfire = pd.read_csv("wildfire.csv")
+wildfire = WildfireDataExtractor().fetch_wildfire()
 wildfire_list = wildfire[["fire_num", "fire_sz_ha", "load_date", "fire_stat", "coordinate"]]
 
 # The whole Wildfire List
