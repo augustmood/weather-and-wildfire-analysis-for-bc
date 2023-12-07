@@ -1,16 +1,23 @@
-import time, yaml, schedule
+import time, yaml
 from datetime import datetime
 from data_fetch import WeatherDataExtractor
-from cassandra import ConsistencyLevel, BatchType
-from cassandra.cluster import Cluster
+from cassandra import ConsistencyLevel
 from cassandra.query import BatchStatement
+from cassandra.cluster import Cluster
+from ssl import SSLContext, PROTOCOL_TLSv1_2, CERT_REQUIRED
+from cassandra.auth import PlainTextAuthProvider
+from cassandra.cqlengine.query import BatchType
 
 def main(weather_data_fetcher, config):
 
     print(f"update current_weather at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     data_current = weather_data_fetcher.fetch_current()
 
-    cluster = Cluster(['node1.local', 'node2.local'])
+    ssl_context = SSLContext(PROTOCOL_TLSv1_2)
+    ssl_context.load_verify_locations('./sf-class2-root.crt')
+    ssl_context.verify_mode = CERT_REQUIRED
+    auth_provider = PlainTextAuthProvider(username=config['USERNAME'], password=config['PASSWORD'])
+    cluster = Cluster(['cassandra.us-west-2.amazonaws.com'], ssl_context=ssl_context, auth_provider=auth_provider, port=9142)
     session = cluster.connect()
     session.execute(f"USE {config['KEYSPACE']}")
 
