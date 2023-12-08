@@ -25,4 +25,6 @@ spark-submit --packages com.datastax.spark:spark-cassandra-connector_2.12:3.4.0 
 # Update Database every day at 12:13 AM
 spark-submit --packages com.datastax.spark:spark-cassandra-connector_2.12:3.4.0 src/load_data_hf.py
 ```
-
+Note
+* Please run the commands in an environment with spark configured.
+* Please run the commands at root directory.
