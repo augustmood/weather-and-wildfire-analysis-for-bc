@@ -13,16 +13,16 @@ spark-submit --packages com.datastax.spark:spark-cassandra-connector_2.12:3.4.0 
 ```
 Scheduled Automation Backend Script (in tmux sessions):
 ```
-# Update Database every hour at :03
+# Update table current_weather every hour at :03
 spark-submit --packages com.datastax.spark:spark-cassandra-connector_2.12:3.4.0 src/import_data_c.py
 
-# Update Database every hour at :03
+# Update table wildfire every hour at :03
 spark-submit --packages com.datastax.spark:spark-cassandra-connector_2.12:3.4.0 src/wildfire_spark_load.py
 
-# Update Database every day at 12:10 AM
+# Update tables history_weather, forecast_weather every day at 12:10 AM
 spark-submit --packages com.datastax.spark:spark-cassandra-connector_2.12:3.4.0 src/import_data_hf.py
 
-# Update Database every day at 12:15 AM
+# Load data from history_weather, forecast_weather every day at 12:15 AM
 spark-submit --packages com.datastax.spark:spark-cassandra-connector_2.12:3.4.0 src/load_data_hf.py
 ```
 Note
