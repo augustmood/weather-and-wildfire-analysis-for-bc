@@ -12,4 +12,4 @@ utils
 dash-bootstrap-components
 dash-daq
 dash-leaflet
-dash_extensions
+dash-extensions
