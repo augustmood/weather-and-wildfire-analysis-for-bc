@@ -1,4 +1,4 @@
-import time, yaml
+import time, yaml, schedule
 from datetime import datetime
 from data_fetch import WeatherDataExtractor
 from cassandra import ConsistencyLevel
@@ -25,13 +25,20 @@ def main(weather_data_fetcher, config):
     val_replace = f"({'?, '*(len(config[f'CURRENT_COLUMNS'])-1)}?)"
 
     batch = BatchStatement(consistency_level=ConsistencyLevel.LOCAL_QUORUM, batch_type=BatchType.UNLOGGED)
+    batch_count = 0
     insert_cmd = session.prepare(f"INSERT INTO current_weather {cols} VALUES {val_replace}")
 
     for row in data_current:
         batch.add(insert_cmd, tuple(row))
-    
+        batch_count += 1
+        if batch_count == 5:
+            session.execute(batch)
+            batch.clear()
+            batch_count = 0
+
     session.execute(batch)
     batch.clear()
+    batch_count = 0
 
     session.shutdown()
 

@@ -1,4 +1,4 @@
-import time, yaml
+import time, yaml, schedule
 from datetime import datetime
 from data_fetch import WeatherDataExtractor
 from cassandra import ConsistencyLevel
