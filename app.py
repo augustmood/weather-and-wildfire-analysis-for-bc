@@ -144,7 +144,7 @@ for i in [1, 2]:
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 
 def render_page_content(pathname):
-    if pathname == "/":
+    if pathname == "/" or pathname == "/home":
         pathname = '/weather_map'
         return render_page_content(pathname)
     elif pathname == '/weather_table':
