@@ -11,6 +11,7 @@ In response to the growing need for comprehensive weather analysis in British Co
 * Dexin Yang
 
 ## Repository Structure
+
 ```
 .
 └── cmpt-732-final-project
@@ -51,9 +52,10 @@ In response to the growing need for comprehensive weather analysis in British Co
 ```
 
 ## Demo
+
 * http://52.26.1.108:8050/
 
-## Tools/Technologies used
+## Tools/Technologies
 
 * Data Fetch Automation: Python Schedule, tmux
 * ETL operations: Apache Spark, Pandas
@@ -61,3 +63,8 @@ In response to the growing need for comprehensive weather analysis in British Co
 * Visualization: Plotly, Leaflet, Mapbox
 * Deployment: Amazon EC2
 * Frontend: Dash by Plotly
+
+## Data source
+
+* [OpenWeatherMap API](https://www.weatherapi.com/)
+* [British Columbia Government's Open Data Portal](https://catalogue.data.gov.bc.ca/dataset/fire-perimeters-current)
