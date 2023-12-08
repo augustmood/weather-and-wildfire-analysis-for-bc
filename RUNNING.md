@@ -19,10 +19,10 @@ spark-submit --packages com.datastax.spark:spark-cassandra-connector_2.12:3.4.0 
 # Update Database every hour at :03
 spark-submit --packages com.datastax.spark:spark-cassandra-connector_2.12:3.4.0 src/wildfire_spark_load.py
 
-# Update Database every day at 12:13 AM
+# Update Database every day at 12:10 AM
 spark-submit --packages com.datastax.spark:spark-cassandra-connector_2.12:3.4.0 src/import_data_hf.py
 
-# Update Database every day at 12:13 AM
+# Update Database every day at 12:15 AM
 spark-submit --packages com.datastax.spark:spark-cassandra-connector_2.12:3.4.0 src/load_data_hf.py
 ```
 Note
