@@ -2,11 +2,10 @@ import time, yaml
 from datetime import datetime
 from data_fetch import WeatherDataExtractor
 from cassandra import ConsistencyLevel
-from cassandra.query import BatchStatement
+from cassandra.query import BatchStatement, BatchType
 from cassandra.cluster import Cluster
 from ssl import SSLContext, PROTOCOL_TLSv1_2, CERT_REQUIRED
 from cassandra.auth import PlainTextAuthProvider
-from cassandra.cqlengine.query import BatchType
 
 def main(weather_data_fetcher, config):
 
@@ -25,7 +24,7 @@ def main(weather_data_fetcher, config):
     cols = str(tuple(config[f'CURRENT_COLUMNS'])).replace("'","")
     val_replace = f"({'?, '*(len(config[f'CURRENT_COLUMNS'])-1)}?)"
 
-    batch = BatchStatement(consistency_level=ConsistencyLevel.ONE, batch_type=BatchType.UNLOGGED)
+    batch = BatchStatement(consistency_level=ConsistencyLevel.LOCAL_QUORUM, batch_type=BatchType.UNLOGGED)
     insert_cmd = session.prepare(f"INSERT INTO current_weather {cols} VALUES {val_replace}")
 
     for row in data_current:

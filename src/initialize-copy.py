@@ -2,12 +2,10 @@ import time, yaml
 from datetime import datetime
 from data_fetch import WeatherDataExtractor
 from cassandra import ConsistencyLevel
-from cassandra.query import BatchStatement
+from cassandra.query import BatchStatement, BatchType
 from cassandra.cluster import Cluster
 from ssl import SSLContext, PROTOCOL_TLSv1_2, CERT_REQUIRED
 from cassandra.auth import PlainTextAuthProvider
-from cassandra.cqlengine.query import BatchType
-
 
 def main(weather_data_fetcher, config):
 
@@ -22,9 +20,9 @@ def main(weather_data_fetcher, config):
     session = cluster.connect()
     session.execute(f"USE {config['KEYSPACE']}")
 
-    session.execute("DROP TABLE IF EXISTS current_weather")
-    session.execute("DROP TABLE IF EXISTS history_weather")
-    session.execute("DROP TABLE IF EXISTS forecast_weather")
+    # session.execute("DROP TABLE IF EXISTS current_weather")
+    # session.execute("DROP TABLE IF EXISTS history_weather")
+    # session.execute("DROP TABLE IF EXISTS forecast_weather")
 
     session.execute("""
     CREATE TABLE IF NOT EXISTS current_weather (city TEXT,
@@ -97,7 +95,7 @@ def main(weather_data_fetcher, config):
     cols = str(tuple(config['HISTORY_COLUMNS'])).replace("'","")
     val_replace = f"({'?, '*(len(config['HISTORY_COLUMNS'])-1)}?)"
 
-    batch = BatchStatement(consistency_level=ConsistencyLevel.ONE, batch_type=BatchType.Unlogged)
+    batch = BatchStatement(consistency_level=ConsistencyLevel.LOCAL_QUORUM, batch_type=BatchType.UNLOGGED)
     batch_count = 0
     insert_history = session.prepare(f"INSERT INTO history_weather {cols} VALUES {val_replace}")
 
