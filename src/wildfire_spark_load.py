@@ -4,6 +4,9 @@ import pandas as pd
 import yaml
 import geopandas as gpd
 import zipfile
+import schedule, time
+import requests
+import os
 from pyspark.sql import SparkSession
 from pyproj import Proj, transform
 from shapely.geometry import Polygon, MultiPolygon
@@ -55,9 +58,45 @@ def extract_zip(zip_file_path, extract_path):
 # Create table on Cassandra:
 # create table wildfire(fire_num text PRIMARY KEY, coordinates list<decimal>, geometry text);
 
-def main():
-    pd.DataFrame.iteritems = pd.DataFrame.items
+def download_file(url, local_filename):
+    with requests.get(url, stream=True) as response:
+        if response.status_code == 200:
+            with open(local_filename, 'wb') as file:
+                for chunk in response.iter_content(chunk_size=8192):
+                    file.write(chunk)
+            print(f"Downloaded: {local_filename}")
+        else:
+            print(f"Failed to download: {url}")
+            print(f"Status code: {response.status_code}")
 
+def main():
+    with open('./config/config.yaml', 'r') as file:
+        config = yaml.safe_load(file)
+    conf = SparkConf()
+    conf.set("spark.sql.extensions", "com.datastax.spark.connector.CassandraSparkExtensions")
+    spark = SparkSession.builder \
+        .appName("Load Wild Fire Data") \
+        .config("spark.cassandra.connection.host", "cassandra.us-west-2.amazonaws.com") \
+        .config("spark.cassandra.connection.port", "9142") \
+        .config("spark.cassandra.connection.ssl.enabled", "true") \
+        .config("spark.cassandra.auth.username", f"{config['AUTH_USERNAME']}") \
+        .config("spark.cassandra.auth.password", f"{config['AUTH_PASSWORD']}") \
+        .config(conf=conf)\
+        .getOrCreate()
+    assert spark.version >= '3.0' # make sure we have Spark 3.0+
+    spark.sparkContext.setLogLevel('WARN')
+    sc = spark.sparkContext
+
+    file_url = "https://pub.data.gov.bc.ca/datasets/cdfc2d7b-c046-4bf0-90ac-4897232619e1/prot_current_fire_polys.zip"
+    dir_path = "./data/"
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    file_path = "./data/prot_current_fire_polys.zip"
+    if os.path.exists("./data/prot_current_fire_polys.zip"):
+        os.remove("./data/prot_current_fire_polys.zip")
+    download_file(file_url, file_path)
+
+    pd.DataFrame.iteritems = pd.DataFrame.items
     # Specify the path to your shapefile (without the file extension)
     zip_file_path = './data/prot_current_fire_polys.zip'
     extract_path = './data/prot_current_fire_polys'
@@ -91,20 +130,7 @@ def main():
     .mode("append").save()
 
 if __name__ == '__main__':
-    with open('./config/config.yaml', 'r') as file:
-        config = yaml.safe_load(file)
-    conf = SparkConf()
-    conf.set("spark.sql.extensions", "com.datastax.spark.connector.CassandraSparkExtensions")
-    spark = SparkSession.builder \
-        .appName("Load Wild Fire Data") \
-        .config("spark.cassandra.connection.host", "cassandra.us-west-2.amazonaws.com") \
-        .config("spark.cassandra.connection.port", "9142") \
-        .config("spark.cassandra.connection.ssl.enabled", "true") \
-        .config("spark.cassandra.auth.username", f"{config['AUTH_USERNAME']}") \
-        .config("spark.cassandra.auth.password", f"{config['AUTH_PASSWORD']}") \
-        .config(conf=conf)\
-        .getOrCreate()
-    assert spark.version >= '3.0' # make sure we have Spark 3.0+
-    spark.sparkContext.setLogLevel('WARN')
-    sc = spark.sparkContext
-    main()
+    schedule.every().hour.at(":03").do(main)
+    while True:
+        schedule.run_pending()
+        time.sleep(60)

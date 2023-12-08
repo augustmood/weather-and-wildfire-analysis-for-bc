@@ -13,10 +13,10 @@ def main(config):
     ssl_context.verify_mode = CERT_REQUIRED
     auth_provider = PlainTextAuthProvider(username=f"{config['AUTH_USERNAME']}", password=f"{config['AUTH_PASSWORD']}")
     cluster = Cluster(['cassandra.us-west-2.amazonaws.com'], ssl_context=ssl_context, auth_provider=auth_provider, port=9142)
-    session_drop = cluster.connect()
-    session_drop.execute(f"USE {config['KEYSPACE']}")
-    session_drop.execute("DROP TABLE IF EXISTS wildfire")
-    session_drop.shutdown()
+    # session_drop = cluster.connect()
+    # session_drop.execute(f"USE {config['KEYSPACE']}")
+    # session_drop.execute("DROP TABLE IF EXISTS wildfire")
+    # session_drop.shutdown()
     session_create = cluster.connect()
     session_create.execute(f"USE {config['KEYSPACE']}")
     session_create.execute("""
