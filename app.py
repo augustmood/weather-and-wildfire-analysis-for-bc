@@ -58,7 +58,7 @@ submenu_1 = [
 
     dbc.Collapse(
         [
-            dbc.NavLink("Table", href="/weather_chart"),
+            dbc.NavLink("Chart", href="/weather_chart"),
             dbc.NavLink("Map", href="/weather_map"),
         ],
         id="submenu-1-collapse"
