@@ -1,10 +1,10 @@
 import sys
-assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
+import yaml
 from datetime import datetime, timedelta
 from pyspark import SparkConf
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, to_date
-import yaml
+assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
 
 class DataExtractor:
 
@@ -13,7 +13,6 @@ class DataExtractor:
             config = yaml.safe_load(file)
             self._config = config
         conf = SparkConf()
-        # conf.set("spark.jars.packages", "com.datastax.spark:spark-cassandra-connector_2.12:3.4.0")
         conf.set("spark.sql.extensions", "com.datastax.spark.connector.CassandraSparkExtensions")
         spark = SparkSession.builder \
             .appName("Load Data") \
@@ -24,7 +23,7 @@ class DataExtractor:
             .config("spark.cassandra.auth.password", f"{config['AUTH_PASSWORD']}") \
             .config(conf = conf)\
             .getOrCreate()
-        assert spark.version >= '3.0' # make sure we have Spark 3.0+
+        assert spark.version >= '3.0'
         spark.sparkContext.setLogLevel('WARN')
         self._spark = spark
 
@@ -68,4 +67,3 @@ class DataExtractor:
         current_weather = current_weather.toPandas()
         current_weather["json"] = current_weather.apply(lambda x: x.to_json(), axis=1)
         return current_weather[["city", "json"]]
-    

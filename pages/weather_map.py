@@ -1,15 +1,8 @@
-from typing import List
-import datetime
-import pytz
-import dash_bootstrap_components as dbc
-from dash import dcc, html, Input, Output, callback, State
-#from plotter import Plotter
-import plotly.express as px
-from dash_labs.plugins import register_page
-from dash.exceptions import PreventUpdate
 import pandas as pd
 import dash_leaflet as dl
 import dash_leaflet.express as dlx
+from dash import dcc, html, Input, Output, callback
+from dash_labs.plugins import register_page
 from dash_extensions.javascript import arrow_function, assign
 from src.data_provider import DataExtractor
 
@@ -17,12 +10,9 @@ register_page(__name__, path="/weather_map")
 
 
 df = DataExtractor().fetch_current_weather()
-# A few cities (assuming df is defined somewhere in your code).
 cities = [eval(i) for i in df.json.to_list()]
-# Generate geojson with a marker for each country and name as tooltip.
 geojson = dlx.dicts_to_geojson(
     [{**c, **dict(tooltip=c['city'] + ', <b>' + c['condition'] + '<b/>' + ', <b>' + str(c['temp_c'])[0:4] + '°C<b/>')} for c in cities])
-# Create javascript function that draws a marker with a custom icon.
 draw_flag = assign("""function(feature, latlng){
 const weather_flag = L.icon({iconUrl: `./assets/64x64/${feature.properties.condition_icon_id}.png`, iconSize: [64, 64]});
 return L.marker(latlng, {icon: weather_flag});
@@ -31,7 +21,6 @@ return L.marker(latlng, {icon: weather_flag});
 eventHandlers = dict(
     contextmenu=assign("function(e, ctx){ctx.map.flyTo([53.726669, -127.647621], 5);}"),
 )
-
 
 def get_info(feature=None):
     header_style = {"fontFamily": "Consolas, monaco, monospace", "text-align": "center", "fontSize": "24px", "fontWeight": "bold"}

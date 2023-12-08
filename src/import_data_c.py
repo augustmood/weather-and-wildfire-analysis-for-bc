@@ -42,7 +42,6 @@ def main(weather_data_fetcher, config):
 
     session.shutdown()
 
-
 if __name__=="__main__":
 
     with open('./config/config.yaml', 'r') as file:

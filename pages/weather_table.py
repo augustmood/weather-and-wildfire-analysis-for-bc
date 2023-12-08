@@ -1,41 +1,18 @@
 import pandas as pd
-from typing import List
-import datetime
-import pytz
-import dateutil.relativedelta
-import dash
-import dash_bootstrap_components as dbc
-import plotly.express as px
-from dash import dcc, html, callback, Input, Output, State
-#from plotter import Plotter
-import re
-import dash_daq as daq
-from dash_labs.plugins import register_page
-from dash.exceptions import PreventUpdate
-# Import packages
-from dash import Dash, html, dash_table, dcc, Input, Output
-import dash
-import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import calendar
-import locale
-import webbrowser
+from dash import dcc, html, callback, Input, Output, State
+from dash_labs.plugins import register_page
 from plotly.subplots import make_subplots
 
 register_page(__name__, path="/weather_table")
 
 
-# Incorporate data
-external_stylesheets = ["style.css"]
 df_history = pd.read_csv('./data/history_weather.csv')
 df_forecast = pd.read_csv('./data/forecast_weather.csv')
 
-# Color Scale
 color_scale = px.colors.qualitative.Plotly
 
-################################################################################
-# Stage of Control: Pie Chart
 def day_chart(df, city, data_type='history'):
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     (fig.add_trace(
@@ -213,7 +190,6 @@ def hour_level(df, city, date, data_type='history'):
 dropdown_style = {"position": "relative", "top": "20px", "left": "0px", "width": "20%", "zIndex": "100000"}
 day_chart_style = {"width": "960px", "margin":"auto"}
 dropdown_style2 = {"width": "200px"}
-# dropdown_style2 = {"position": "relative", "top": "20px", "left": "0px", "width": "20%", "zIndex": "100000"}
 
 history_tab = html.Div(children=[
     html.Div([dcc.Dropdown(list(df_history.city.unique()), placeholder="Select a city...", id='history-city-dropdown')],
@@ -306,6 +282,5 @@ def forecast_tab_update(value1, value2):
 
     ])
     return forecast_day_charts_layout
-
 
 layout = html.Div(children=[weather_table_page], style={'min-width': '100%'})

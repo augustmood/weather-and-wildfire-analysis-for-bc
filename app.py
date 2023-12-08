@@ -1,11 +1,9 @@
-from distutils.log import debug
 import dash
 import dash_bootstrap_components as dbc
+import plotly.graph_objects as go
 from dash import Input, Output, dcc, html, State
-import plotly.express as px
 from dash_labs.plugins import register_page
 from pages import weather_table, weather_map, wildfire_list, wildfire_graphs, wildfire_map
-import plotly.graph_objects as go
 
 register_page(__name__,path="/")
 app = dash.Dash(
@@ -43,12 +41,9 @@ fig.add_layout_image(
     )
 )
 
-
-
 submenu_1 = [
     html.Div(
-        # use Row and Col components to position the chevrons
-        html.Div(    #Screen is split in rows and columns. This is the first row with 2 columns
+        html.Div( 
             children=[
                 html.Div("Weather", style={'widht': '6rem', 'float': 'left', 'cursor' : 'default'}),
                 html.Div(
@@ -72,8 +67,7 @@ submenu_1 = [
 
 submenu_2 = [
 html.Div(
-        # use Row and Col components to position the chevrons
-        html.Div(    #Screen is split in rows and columns. This is the first row with 2 columns
+        html.Div(  
             children=[
                 html.Div("Wildfire", style={'widht': '6rem', 'float': 'left', 'cursor' : 'default'}),
                 html.Div(
@@ -174,4 +168,4 @@ def render_page_content(pathname):
     )
 
 if __name__ == "__main__":
-    app.run_server(port=8080,debug=False)
+    app.run_server(host='0.0.0.0',port=8050,debug=False)

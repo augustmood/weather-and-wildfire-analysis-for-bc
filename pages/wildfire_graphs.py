@@ -1,42 +1,23 @@
 import pandas as pd
-from typing import List
-import datetime
-import pytz
-import dateutil.relativedelta
-import dash
-import dash_bootstrap_components as dbc
-import plotly.express as px
-from dash import dcc, html, callback, Input, Output, State
-#from plotter import Plotter
-import re
-import dash_daq as daq
-from dash_labs.plugins import register_page
-from dash.exceptions import PreventUpdate
-# Import packages
-from dash import Dash, html, dash_table, dcc, Input, Output
-import dash
-import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import calendar
-import locale
-import webbrowser
 import sys
-sys.path.append('./')
+from typing import List
+from dash import dcc, html, callback
+from dash_labs.plugins import register_page
+from dash import html, dash_table, dcc, Input, Output
 from src.data_provider import DataExtractor
+sys.path.append('./')
 
 register_page(__name__, path="/wildfire_graphs")
 
-# from read_wildfire import wildfire_list_df
-# Incorporate data
-external_stylesheets = ["style.css"]
 wildfire = DataExtractor().fetch_wildfire()
 wildfire_list = wildfire[["fire_num", "fire_sz_ha", "load_date", "fire_stat", "coordinate"]]
 
 # Color Scale
 color_scale = px.colors.qualitative.Plotly
 
-################################################################################
 # Stage of Control: Pie Chart
 pie_df = wildfire_list['fire_stat'].value_counts(normalize=True) * 100
 pie_fig = dcc.Graph(
@@ -65,12 +46,6 @@ stage = html.Div([
     pie_fig,
     html.Div(style={'clear': 'both'})
 ], style={"margin":"auto", "width": "900px"})
-
-################################################################################
-## Analysis By Month
-# wildfire_by_month = wildfire_list
-# wildfire_by_month['load_date'] = pd.to_datetime(wildfire_by_month['load_date'])
-
 
 wildfire_by_month = wildfire_list
 print(wildfire_list['load_date'])
@@ -173,8 +148,8 @@ style={'width':'1000px', 'margin': 'auto'})
 
 # Callback to update the table based on the selected radio item
 @callback(
-    dash.dependencies.Output('graph-container', 'children'),
-    [dash.dependencies.Input('radio-selector', 'value')]
+    Output('graph-container', 'children'),
+    [Input('radio-selector', 'value')]
 )
 def update_table(selected_graph):
     if selected_graph == 'fire_sz':

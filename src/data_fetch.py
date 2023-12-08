@@ -71,9 +71,6 @@ class WeatherDataFetcher:
         return result
         
     def _extract_forecast(self, input_dict):
-        """
-        load next 3 days data
-        """
         results = []
 
         for day in range(1, self._config['FORECAST_DAYS']+1):
@@ -126,7 +123,7 @@ class WeatherDataFetcher:
     def fetch_current(self, aqi=True):
 
         """
-        Fetch current weather data for all 52 cities in British Columnbia.
+        Fetch current weather data for all cities in British Columnbia city list.
         """
         url = f"http://api.weatherapi.com/v1/current.json?key={self._config['API_KEY']}&q=bulk{'&aqi=yes' if aqi == True else ''}"
 
@@ -146,7 +143,7 @@ class WeatherDataFetcher:
     def fetch_forecast(self, aqi=True):
 
         """
-        Fetch next 3 days forecast weather data for all 52 cities in British Columnbia.
+        Fetch next 3 days forecast weather data for all cities in British Columnbia city list.
         Granularity: by date & by hour
         """
         url = f"http://api.weatherapi.com/v1/forecast.json?key={self._config['API_KEY']}&q=bulk{'&aqi=yes' if aqi == True else ''}&days={self._config['FORECAST_DAYS']+1}"
@@ -165,7 +162,7 @@ class WeatherDataFetcher:
     def fetch_history(self):
 
         """
-        Fetch last 7 days historical weather data for all 52 cities in British Columnbia.
+        Fetch last 7 days historical weather data for all cities in British Columnbia city list.
         Granularity: by date & by hour
         """
         full_raw_data_list = []
@@ -187,7 +184,7 @@ class WeatherDataFetcher:
     def fetch_history_update(self):
 
         """
-        Update last day historical weather data for all 52 cities in British Columnbia.
+        Update last day historical weather data for all cities in British Columnbia city list.
         Granularity: by date & by hour
         """
         url = f"http://api.weatherapi.com/v1/history.json?key={self._config['API_KEY']}&q=bulk&dt={(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}"

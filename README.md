@@ -7,9 +7,9 @@ In response to the growing need for comprehensive weather analysis in British Co
 
 ## Contributors: 
 
-* He Chengkun
-* Li Binming
-* Yang Dexin
+* Chengkun He
+* Binming Li
+* Dexin Yang
 
 ## demo: TBD
 

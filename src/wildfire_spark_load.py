@@ -1,16 +1,16 @@
 import sys
-assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
-from pyspark.sql import SparkSession, functions, types
+import numpy as np
+import pandas as pd
+import yaml
 import geopandas as gpd
+import zipfile
+from pyspark.sql import SparkSession
 from pyproj import Proj, transform
 from shapely.geometry import Polygon, MultiPolygon
-import numpy as np
-from shapely.wkt import dumps, loads
-import zipfile
+from shapely.wkt import loads
 from simpledbf import Dbf5
-import pandas as pd
 from pyspark import SparkConf
-import yaml
+assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
 
 # function to transfer EPSG: 3005 Geographic coordinates to EPSG 4326 Coordinates.
 
@@ -56,7 +56,6 @@ def extract_zip(zip_file_path, extract_path):
 # create table wildfire(fire_num text PRIMARY KEY, coordinates list<decimal>, geometry text);
 
 def main():
-    # important
     pd.DataFrame.iteritems = pd.DataFrame.items
 
     # Specify the path to your shapefile (without the file extension)
@@ -70,7 +69,6 @@ def main():
     locations["coordinates"] = locations["geometry"] \
     .apply(lambda x: coord_converter(avg_coord(poly_converter(x))))
     locations = locations.drop('geometry', axis=1)
-    # locations["geometry"] = locations["geometry"].apply(lambda x: dumps(x))
     locations_df = spark.createDataFrame(locations).repartition(100)
     locations_df = locations_df.withColumnRenamed("FIRE_NUM", "fire_num")
 
@@ -96,7 +94,6 @@ if __name__ == '__main__':
     with open('./config/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
     conf = SparkConf()
-    # conf.set("spark.jars.packages", "com.datastax.spark:spark-cassandra-connector_2.12:3.4.0")
     conf.set("spark.sql.extensions", "com.datastax.spark.connector.CassandraSparkExtensions")
     spark = SparkSession.builder \
         .appName("Load Wild Fire Data") \
