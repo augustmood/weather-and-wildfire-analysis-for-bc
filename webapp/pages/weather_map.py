@@ -88,7 +88,7 @@ info = html.Div(
         'padding-bottom': '40px',
         'padding-left': '60px',
         'padding-right': '60px',
-        "width": "360px",
+        "width": "400px",
         'background-color': 'rgba(255, 255, 255, 0.7)',
         'color': 'black',
         'border-radius': '10px',
