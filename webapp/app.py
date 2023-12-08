@@ -153,7 +153,7 @@ def render_page_content(pathname):
     if pathname == "/":
         pathname = '/weather_map'
         return render_page_content(pathname)
-    elif pathname == '/weather_map':
+    elif pathname == '/weather_table':
         return weather_table.layout
     elif pathname == '/weather_map':
         return weather_map.layout

@@ -28,8 +28,8 @@ register_page(__name__, path="/weather_table")
 
 # Incorporate data
 external_stylesheets = ["style.css"]
-df_history = pd.read_csv("history_weather.csv")
-df_forecast = pd.read_csv("forecast_weather.csv")
+df_history = pd.read_csv('./data/history_weather.csv')
+df_forecast = pd.read_csv('./data/forecast_weather.csv')
 
 # Color Scale
 color_scale = px.colors.qualitative.Plotly
@@ -128,9 +128,7 @@ def melt_forecast(df, city, date):
         'condition_icon_id_at' + str(i): 'condition_icon_id', 'chance_of_rain_at' + str(i): 'chance_of_rain',
         'chance_of_snow_at' + str(i): 'chance_of_snow'
     }) for i in range(24)], ignore_index=True).reset_index(drop=False).rename(columns={'index': 'hour'})
-    result_df['city'] = city
-    result_df['date'] = date
-    return result_df
+
 
 def hour_chart(df, city, date, data_type='history'):
     fig = make_subplots(specs=[[{"secondary_y": True}]])

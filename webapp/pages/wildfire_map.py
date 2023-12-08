@@ -24,7 +24,7 @@ import webbrowser
 
 import sys
 sys.path.append('./')
-from wildfire_data_provider import WildfireDataExtractor
+from data_provider import WildfireDataExtractor
 
 register_page(__name__, path="/wildfire_map")
 
