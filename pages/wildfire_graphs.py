@@ -48,7 +48,6 @@ stage = html.Div([
 ], style={"margin":"auto", "width": "900px"})
 
 wildfire_by_month = wildfire_list
-print(wildfire_list['load_date'])
 wildfire_by_month['Month'] = wildfire_list['load_date']\
     .apply(lambda x: calendar.month_name[x.month])
 wildfire_by_month = wildfire_by_month.groupby('Month').agg({'fire_sz_ha': 'sum', 'fire_num': 'count'}).reset_index()

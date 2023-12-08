@@ -34,7 +34,6 @@ def open_url_in_new_tab(click_data):
     if click_data:
         selected_url = click_data['points'][0].get('customdata', None)[0]
         if selected_url:
-            print(click_data)
             webbrowser.open_new_tab(selected_url)
     return None
 
