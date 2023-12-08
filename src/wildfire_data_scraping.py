@@ -14,10 +14,10 @@ def download_file(url, local_filename):
 
 if __name__ == "__main__":
     file_url = "https://pub.data.gov.bc.ca/datasets/cdfc2d7b-c046-4bf0-90ac-4897232619e1/prot_current_fire_polys.zip"
-    dir_path = "../data/"
+    dir_path = "./data/"
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
-    file_path = "../data/prot_current_fire_polys.zip"
-    if os.path.exists("../data/prot_current_fire_polys.zip"):
-        os.remove("../data/prot_current_fire_polys.zip")
+    file_path = "./data/prot_current_fire_polys.zip"
+    if os.path.exists("./data/prot_current_fire_polys.zip"):
+        os.remove("./data/prot_current_fire_polys.zip")
     download_file(file_url, file_path)

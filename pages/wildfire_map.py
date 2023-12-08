@@ -1,24 +1,12 @@
-import pandas as pd
 from typing import List
-import datetime
-import pytz
-import dateutil.relativedelta
-import dash
 import dash_bootstrap_components as dbc
 import plotly.express as px
-from dash import dcc, html, callback, Input, Output, State
-#from plotter import Plotter
-import re
-import dash_daq as daq
+from dash import dcc, html, callback, Input, Output
 from dash_labs.plugins import register_page
-from dash.exceptions import PreventUpdate
 # Import packages
-from dash import Dash, html, dash_table, dcc, Input, Output
-import dash
-import pandas as pd
+from dash import html, dcc, Input, Output
 import plotly.express as px
-import plotly.graph_objects as go
-import calendar
+import yaml
 import locale
 import webbrowser
 
@@ -33,13 +21,14 @@ register_page(__name__, path="/wildfire_map")
 external_stylesheets = ["style.css"]
 wildfire = DataExtractor().fetch_wildfire()
 wildfire_list = wildfire[["fire_num", "fire_sz_ha", "load_date", "fire_stat", "coordinate"]]
-
+with open('./config/config.yaml', 'r') as file:
+    config = yaml.safe_load(file)
 
 # Wildfire Map
 
 locale.setlocale(locale.LC_NUMERIC, 'en_US.UTF-8')
 map_data = wildfire
-px.set_mapbox_access_token("pk.eyJ1IjoiYnJhbmRvbmxpIiwiYSI6ImNscHJrejRvbzAwcWcya2xiNDR6bHNyMDkifQ.vd0IjbvmrKvkdpFRp9FOiw")
+px.set_mapbox_access_token(config['TOKEN'])
 map_fig = px.scatter_mapbox(map_data, lat="latitude", lon="longitude", color='fire_stat', hover_name="fire_num",
                   color_continuous_scale=px.colors.cyclical.IceFire, zoom=5, 
                   custom_data=['fire_link'])

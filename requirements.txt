@@ -1,6 +1,5 @@
 pandas
 requests
-selenium
 schedule
 simpledbf
 geopandas
@@ -8,8 +7,8 @@ pyproj
 shapely
 cassandra-driver
 dash
-dash_labs
+dash-labs
 utils
 dash_bootstrap_components
-waitress
-dash_daq
+dash-daq
+dash-leaflef

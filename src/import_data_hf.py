@@ -9,7 +9,7 @@ from cassandra.auth import PlainTextAuthProvider
 
 def main(weather_data_fetcher, config):
 
-    print(f"update current_weather at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"update history_weather & forecast_weather at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     data_forecast = weather_data_fetcher.fetch_forecast()
     data_history = weather_data_fetcher.fetch_history_update()
 
