@@ -171,7 +171,7 @@ def hour_chart_wind_cloud(df, city, date):
     (fig.add_trace(
         go.Scatter(x=df.hour, y=df.wind_mph, name="Wind Speed", mode="lines+markers", marker_color='#27aeef',
                    line_color='#27aeef', hovertemplate='<br><b>Wind Speed</b>: %{x}<br>' + '<br>%{text}<br>',
-                   text=[f"<br><b>Wind Direction</b>: {i}</br>" for i in df.wind_dir]),
+                   text=[f"<b>Wind Direction</b>: {i}" for i in df.wind_dir]),
         secondary_y=False,
     ).add_trace(
         go.Bar(x=df.hour, y=df.cloud, name="Cloud Coverage", opacity=0.5),

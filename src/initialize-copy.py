@@ -2,10 +2,9 @@ import time, yaml
 from datetime import datetime
 from data_fetch import WeatherDataExtractor
 from cassandra import ConsistencyLevel
-from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement
 from cassandra.cluster import Cluster
-from ssl import SSLContext, PROTOCOL_TLSv1_2 , CERT_REQUIRED
+from ssl import SSLContext, PROTOCOL_TLSv1_2, CERT_REQUIRED
 from cassandra.auth import PlainTextAuthProvider
 from cassandra.cqlengine.query import BatchType
 
@@ -15,13 +14,13 @@ def main(weather_data_fetcher, config):
     print(f"Initalize database at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     data = weather_data_fetcher.fetch_history()
 
-    ssl_context = SSLContext(PROTOCOL_TLSv1_2 )
+    ssl_context = SSLContext(PROTOCOL_TLSv1_2)
     ssl_context.load_verify_locations('./sf-class2-root.crt')
     ssl_context.verify_mode = CERT_REQUIRED
-    auth_provider = PlainTextAuthProvider(username='bin-ming-at-872464001298', password='O7k1jKqgvzG+Fbw2EsM7HGN8Pc0tEMYMWqr/cgrj3kI=')
+    auth_provider = PlainTextAuthProvider(username=config['USERNAME'], password=config['PASSWORD'])
     cluster = Cluster(['cassandra.us-west-2.amazonaws.com'], ssl_context=ssl_context, auth_provider=auth_provider, port=9142)
     session = cluster.connect()
-    session.execute("USE bla175")
+    session.execute(f"USE {config['KEYSPACE']}")
 
     session.execute("DROP TABLE IF EXISTS current_weather")
     session.execute("DROP TABLE IF EXISTS history_weather")
