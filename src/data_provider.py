@@ -37,6 +37,7 @@ class DataExtractor:
         wildfire_pd["longitude"] = wildfire_pd["longitude"].apply(lambda x: round(float(x), 3))
         wildfire_pd["latitude"] = wildfire_pd["latitude"].apply(lambda x: round(float(x), 3))
         wildfire_pd["coordinate"] = wildfire_pd.apply(lambda x: "[" + str(x['longitude']) + " , " + str(x['latitude']) + "]", axis=1)
+        wildfire_pd = wildfire_pd[wildfire_pd.fire_stat != 'nan']
         return wildfire_pd
 
     def fetch_history_weather(self, path):
