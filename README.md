@@ -12,7 +12,7 @@ In response to the growing need for comprehensive weather analysis in British Co
 * Dexin Yang
 
 ## Repository Structure
-
+```
 .
 └── cmpt-732-final-project
     ├── assets/                                <- picture assets of web app
@@ -49,6 +49,7 @@ In response to the growing need for comprehensive weather analysis in British Co
     ├── README.md                              <- deployment & launch instruction
     ├── RUNNING.md                             <- introduction to the project
     └── .gitignore
+```
 
 ## demo: TBD
 
