@@ -99,7 +99,7 @@ info = html.Div(
     })
 
 main_page = html.Div([
-    html.Div([dcc.Dropdown(list(df.city), placeholder="Select a city...", id='demo-dropdown')],
+    html.Div([dcc.Dropdown(list(df.city), placeholder="Select a city...", id='map-city-dropdown')],
              style={"position": "fixed", "top": "40px", "left": "360px", "width": "20%", "zIndex": "100000"}),
     dl.Map(children=[
         dl.TileLayer(),
@@ -115,7 +115,7 @@ main_page = html.Div([
 ])
 
 
-@callback(Output('demo-dropdown', 'value'),
+@callback(Output('map-city-dropdown', 'value'),
               Input("geojson", "clickData"))
 def info_hover(feature):
     if feature is not None:
@@ -124,7 +124,7 @@ def info_hover(feature):
 
 @callback(
     [Output('map-container', 'viewport'), Output('info', 'children')],
-    [Input('demo-dropdown', 'value')],
+    [Input('map-city-dropdown', 'value')],
     prevent_initial_call=True
 )
 def update_map(value):
