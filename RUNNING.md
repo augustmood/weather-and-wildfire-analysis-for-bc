@@ -11,7 +11,7 @@ spark-submit --packages com.datastax.spark:spark-cassandra-connector_2.12:3.4.0 
 # Initialize wildfire data table
 spark-submit --packages com.datastax.spark:spark-cassandra-connector_2.12:3.4.0 src/wildfire_initialize.py
 ```
-Scheduled Automation Backend Script:
+Scheduled Automation Backend Script (in tmux sessions):
 ```
 # Update Database every hour at :03
 spark-submit --packages com.datastax.spark:spark-cassandra-connector_2.12:3.4.0 src/import_data_c.py
