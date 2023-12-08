@@ -29,7 +29,8 @@ class DataExtractor:
         self._spark = spark
 
     def fetch_wildfire(self):
-        wildfire = self._spark.read.format("org.apache.spark.sql.cassandra").options(table="wildfire", keyspace=self._config['KEYSPACE']).load()
+        wildfire = self._spark.read.format("org.apache.spark.sql.cassandra")\
+            .options(table="wildfire", keyspace=self._config['KEYSPACE']).load()
         wildfire = wildfire.withColumn("longitude", col("coordinates").getItem(0))\
                     .withColumn("latitude", col("coordinates").getItem(1)) \
                     .drop("coordinates")
@@ -39,7 +40,7 @@ class DataExtractor:
         wildfire_pd["coordinate"] = wildfire_pd.apply(lambda x: [x['longitude'], x['latitude']], axis=1)
         return wildfire_pd
 
-    def fetch_history_weather(self):
+    def fetch_history_weather(self, path):
         history_weather = self._spark.read.format("org.apache.spark.sql.cassandra")\
             .options(table="history_weather", keyspace=self._config['KEYSPACE']).load()
         history_weather = history_weather.withColumn('date', to_date(col('date')))
@@ -47,10 +48,10 @@ class DataExtractor:
         start_date = (datetime.today()-timedelta(days=7)).strftime('%Y-%m-%d')
         end_date = (datetime.today()-timedelta(days=1)).strftime('%Y-%m-%d')
         filtered_df = history_weather.filter((col('date') >= start_date) & (col('date') <= end_date))
-        filtered_df.toPandas().to_csv('./data/history_weather.csv')
+        filtered_df.toPandas().to_csv(path)
         return None
         
-    def fetch_forecast_weather(self):
+    def fetch_forecast_weather(self, path):
         forecast_weather = self._spark.read.format("org.apache.spark.sql.cassandra")\
             .options(table="forecast_weather", keyspace=self._config['KEYSPACE']).load()
         forecast_weather = forecast_weather.withColumn('date', to_date(col('date')))
@@ -58,7 +59,7 @@ class DataExtractor:
         start_date = (datetime.today()+timedelta(days=1)).strftime('%Y-%m-%d')
         end_date = (datetime.today()+timedelta(days=3)).strftime('%Y-%m-%d')
         filtered_df = forecast_weather.filter((col('date') >= start_date) & (col('date') <= end_date))
-        filtered_df.toPandas().to_csv('./data/forecast_weather.csv')
+        filtered_df.toPandas().to_csv(path)
         return None
         
     def fetch_current_weather(self):

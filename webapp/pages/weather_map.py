@@ -11,12 +11,12 @@ import pandas as pd
 import dash_leaflet as dl
 import dash_leaflet.express as dlx
 from dash_extensions.javascript import arrow_function, assign
-from data_provider import WildfireDataExtractor
+from data_provider import DataExtractor
 
 register_page(__name__, path="/weather_map")
 
 
-df = WildfireDataExtractor().fetch_current_weather()
+df = DataExtractor().fetch_current_weather()
 # A few cities (assuming df is defined somewhere in your code).
 cities = [eval(i) for i in df.json.to_list()]
 # Generate geojson with a marker for each country and name as tooltip.
