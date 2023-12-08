@@ -66,5 +66,5 @@ In response to the growing need for comprehensive weather analysis in British Co
 
 ## Data source
 
-* [OpenWeatherMap API](https://www.weatherapi.com/)
+* [Free Weather API](https://www.weatherapi.com/)
 * [British Columbia Government's Open Data Portal](https://catalogue.data.gov.bc.ca/dataset/fire-perimeters-current)
