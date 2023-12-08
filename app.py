@@ -3,7 +3,7 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 from dash import Input, Output, dcc, html, State
 from dash_labs.plugins import register_page
-from pages import weather_table, weather_map, wildfire_list, wildfire_graphs, wildfire_map
+from pages import weather_chart, weather_map, wildfire_list, wildfire_graphs, wildfire_map
 
 register_page(__name__,path="/")
 app = dash.Dash(
@@ -45,20 +45,20 @@ submenu_1 = [
     html.Div(
         html.Div( 
             children=[
-                html.Div("Weather", style={'widht': '6rem', 'float': 'left', 'cursor' : 'default'}),
+                html.Div("Weather", style={'width': '6rem', 'float': 'left', 'cursor': 'default'}),
                 html.Div(
-                    html.Img(src='/assets/arrow-down-sign-to-navigate.png', style={'width': '1em','height': '1em', 'cursor' : 'pointer'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
+                    html.Img(src='/assets/arrow-down-sign-to-navigate.png', style={'width': '1em', 'height': '1em', 'cursor': 'pointer'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
                 ),
                 html.Div(style={"clear": "both"})
             ],
         ),
         id="submenu-1",
-        style={"width":"12.5rem", "margin":"auto", "margin-bottom":"5px"}
+        style={"width": "12.5rem", "margin": "auto", "margin-bottom": "5px"}
     ),
 
     dbc.Collapse(
         [
-            dbc.NavLink("Table", href="/weather_table"),
+            dbc.NavLink("Table", href="/weather_chart"),
             dbc.NavLink("Map", href="/weather_map"),
         ],
         id="submenu-1-collapse"
@@ -69,15 +69,15 @@ submenu_2 = [
 html.Div(
         html.Div(  
             children=[
-                html.Div("Wildfire", style={'widht': '6rem', 'float': 'left', 'cursor' : 'default'}),
+                html.Div("Wildfire", style={'width': '6rem', 'float': 'left', 'cursor': 'default'}),
                 html.Div(
-                    html.Img(src='/assets/arrow-down-sign-to-navigate.png', style={'width' : '1em', 'height': '1em', 'cursor' : 'pointer'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
+                    html.Img(src='/assets/arrow-down-sign-to-navigate.png', style={'width': '1em', 'height': '1em', 'cursor': 'pointer'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
                 ),
                 html.Div(style={"clear": "both"})
             ],
         ),
         id="submenu-2",
-        style={"width":"12.5rem", "margin":"auto", "margin-bottom":"5px"}
+        style={"width": "12.5rem", "margin": "auto", "margin-bottom": "5px"}
     ),
 
     dbc.Collapse(
@@ -101,7 +101,7 @@ navbar = html.Div(
         ),
         html.Div(
             "BC Weahther and Wildfire Visualizer", className="h5",
-            style={"width":"10rem", "margin": "auto"}
+            style={"width": "10rem", "margin": "auto"}
         ),
         html.Hr(),
         html.P(
@@ -147,8 +147,8 @@ def render_page_content(pathname):
     if pathname == "/" or pathname == "/home":
         pathname = '/weather_map'
         return render_page_content(pathname)
-    elif pathname == '/weather_table':
-        return weather_table.layout
+    elif pathname == '/weather_chart':
+        return weather_chart.layout
     elif pathname == '/weather_map':
         return weather_map.layout
     elif pathname == '/wildfire_list':

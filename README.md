@@ -39,7 +39,7 @@ In response to the growing need for comprehensive weather analysis in British Co
     │   └── history_weather.csv
     ├── pages/                                 <- pages displayed in app
     │   ├── weather_map.py
-    │   ├── weather_table.py
+    │   ├── weather_chart.py
     │   ├── wildfire_graphs.py
     │   ├── wildfire_list.py
     │   └── wildfire_map.py

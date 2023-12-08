@@ -5,7 +5,7 @@ from dash import dcc, html, callback, Input, Output, State
 from dash_labs.plugins import register_page
 from plotly.subplots import make_subplots
 
-register_page(__name__, path="/weather_table")
+register_page(__name__, path="/weather_chart")
 
 
 df_history = pd.read_csv('./data/history_weather.csv')
@@ -202,7 +202,7 @@ forecast_tab = html.Div(children=[
         style=dropdown_style),
     html.Div(children=[], id="forecast-city-dropdown-data")], id='forecast-tab')
 
-weather_table_page = dcc.Tabs(
+weather_chart_page = dcc.Tabs(
     children=[
         dcc.Tab(label='History Weather',
                 children=[history_tab],
@@ -283,4 +283,4 @@ def forecast_tab_update(value1, value2):
     ])
     return forecast_day_charts_layout
 
-layout = html.Div(children=[weather_table_page], style={'min-width': '100%'})
+layout = html.Div(children=[weather_chart_page], style={'min-width': '100%'})
