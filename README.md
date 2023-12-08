@@ -4,7 +4,7 @@
 
 In response to the growing need for comprehensive weather analysis in British Columbia, our project aims to leverage advanced data analytics and visualization techniques to provide a detailed understanding of key environmental factors. Focused on weather, temperature, air pollution, and wildfire data, our project culminates in the development of a web application designed to offer accessible insights to the residents and authorities of British Columbia.
 
-## Contributors: 
+## Contributors
 
 * Chengkun He
 * Binming Li
@@ -50,9 +50,10 @@ In response to the growing need for comprehensive weather analysis in British Co
     └── .gitignore
 ```
 
-## demo: http://52.26.1.108:8050/
+## Demo
+* http://52.26.1.108:8050/
 
-## Tools/Technologies used:
+## Tools/Technologies used
 
 * Data Fetch Automation: Python Schedule, tmux
 * ETL operations: Apache Spark, Pandas
