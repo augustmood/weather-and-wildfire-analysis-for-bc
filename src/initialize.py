@@ -1,22 +1,28 @@
 import time, yaml
 from datetime import datetime
-from data_fetch import WeatherDataExtractor
+from data_fetch import WeatherDataFetcher
 from cassandra import ConsistencyLevel
-from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement, BatchType
+from cassandra.cluster import Cluster
+from ssl import SSLContext, PROTOCOL_TLSv1_2, CERT_REQUIRED
+from cassandra.auth import PlainTextAuthProvider
 
 def main(weather_data_fetcher, config):
 
     print(f"Initalize database at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     data = weather_data_fetcher.fetch_history()
 
-    cluster = Cluster(['node1.local', 'node2.local'])
+    ssl_context = SSLContext(PROTOCOL_TLSv1_2)
+    ssl_context.load_verify_locations('./config/sf-class2-root.crt')
+    ssl_context.verify_mode = CERT_REQUIRED
+    auth_provider = PlainTextAuthProvider(username=config['USERNAME'], password=config['PASSWORD'])
+    cluster = Cluster(['cassandra.us-west-2.amazonaws.com'], ssl_context=ssl_context, auth_provider=auth_provider, port=9142)
     session = cluster.connect()
     session.execute(f"USE {config['KEYSPACE']}")
 
-    session.execute("DROP TABLE IF EXISTS current_weather")
-    session.execute("DROP TABLE IF EXISTS history_weather")
-    session.execute("DROP TABLE IF EXISTS forecast_weather")
+    # session.execute("DROP TABLE IF EXISTS current_weather")
+    # session.execute("DROP TABLE IF EXISTS history_weather")
+    # session.execute("DROP TABLE IF EXISTS forecast_weather")
 
     session.execute("""
     CREATE TABLE IF NOT EXISTS current_weather (city TEXT,
@@ -111,9 +117,9 @@ def main(weather_data_fetcher, config):
 
 if __name__=="__main__":
 
-    with open('../config/config.yaml', 'r') as file:
+    with open('./config/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
-    weather_data_fetcher = WeatherDataExtractor(config)
+    weather_data_fetcher = WeatherDataFetcher(config)
 
     t1 = time.time()
     main(weather_data_fetcher, config)

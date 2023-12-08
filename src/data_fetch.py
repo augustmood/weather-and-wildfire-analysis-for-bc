@@ -1,4 +1,3 @@
-import pandas as pd
 import requests
 import json
 import time
@@ -6,7 +5,7 @@ from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 
-class WeatherDataExtractor:
+class WeatherDataFetcher:
 
     def __init__(self, config, retries=5):
         self._config = config

@@ -9,7 +9,7 @@ import time
 
 def main(config):
     ssl_context = SSLContext(PROTOCOL_TLSv1_2 )
-    ssl_context.load_verify_locations('../config/sf-class2-root.crt')
+    ssl_context.load_verify_locations('./config/sf-class2-root.crt')
     ssl_context.verify_mode = CERT_REQUIRED
     auth_provider = PlainTextAuthProvider(username=f"{config['AUTH_USERNAME']}", password=f"{config['AUTH_PASSWORD']}")
     cluster = Cluster(['cassandra.us-west-2.amazonaws.com'], ssl_context=ssl_context, auth_provider=auth_provider, port=9142)
@@ -41,7 +41,7 @@ def main(config):
     session_create.shutdown()
 
 if __name__ == '__main__':
-    with open('../config/config.yaml', 'r') as file:
+    with open('./config/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
     t1 = time.time()
     main(config)

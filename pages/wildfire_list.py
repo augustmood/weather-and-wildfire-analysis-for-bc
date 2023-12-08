@@ -23,7 +23,7 @@ import locale
 import webbrowser
 import sys
 sys.path.append('./')
-from data_provider import DataExtractor
+from src.data_provider import DataExtractor
 
 register_page(__name__, path="/wildfire_list")
 

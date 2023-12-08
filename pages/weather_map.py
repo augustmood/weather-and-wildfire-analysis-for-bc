@@ -11,7 +11,7 @@ import pandas as pd
 import dash_leaflet as dl
 import dash_leaflet.express as dlx
 from dash_extensions.javascript import arrow_function, assign
-from data_provider import DataExtractor
+from src.data_provider import DataExtractor
 
 register_page(__name__, path="/weather_map")
 

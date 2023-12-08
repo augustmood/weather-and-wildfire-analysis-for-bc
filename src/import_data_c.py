@@ -1,6 +1,6 @@
 import time, yaml, schedule
 from datetime import datetime
-from data_fetch import WeatherDataExtractor
+from data_fetch import WeatherDataFetcher
 from cassandra import ConsistencyLevel
 from cassandra.query import BatchStatement, BatchType
 from cassandra.cluster import Cluster
@@ -13,7 +13,7 @@ def main(weather_data_fetcher, config):
     data_current = weather_data_fetcher.fetch_current()
 
     ssl_context = SSLContext(PROTOCOL_TLSv1_2)
-    ssl_context.load_verify_locations('./sf-class2-root.crt')
+    ssl_context.load_verify_locations('./config/sf-class2-root.crt')
     ssl_context.verify_mode = CERT_REQUIRED
     auth_provider = PlainTextAuthProvider(username=config['USERNAME'], password=config['PASSWORD'])
     cluster = Cluster(['cassandra.us-west-2.amazonaws.com'], ssl_context=ssl_context, auth_provider=auth_provider, port=9142)
@@ -45,10 +45,10 @@ def main(weather_data_fetcher, config):
 
 if __name__=="__main__":
 
-    with open('../config/config.yaml', 'r') as file:
+    with open('./config/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
 
-    weather_data_fetcher = WeatherDataExtractor(config)
+    weather_data_fetcher = WeatherDataFetcher(config)
     schedule.every().hour.at(":03").do(main, weather_data_fetcher, config)
     while True:
         schedule.run_pending()

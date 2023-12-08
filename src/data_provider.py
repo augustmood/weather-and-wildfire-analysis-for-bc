@@ -9,7 +9,7 @@ import yaml
 class DataExtractor:
 
     def __init__(self):
-        with open('../config/config.yaml', 'r') as file:
+        with open('./config/config.yaml', 'r') as file:
             config = yaml.safe_load(file)
             self._config = config
         conf = SparkConf()

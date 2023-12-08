@@ -60,10 +60,10 @@ def main():
     pd.DataFrame.iteritems = pd.DataFrame.items
 
     # Specify the path to your shapefile (without the file extension)
-    zip_file_path = '../local_download/prot_current_fire_polys.zip'
-    extract_path = '../local_download/prot_current_fire_polys'
+    zip_file_path = '../data/prot_current_fire_polys.zip'
+    extract_path = '../data/prot_current_fire_polys'
     extract_zip(zip_file_path, extract_path)
-    shapefile_path = '../local_download/prot_current_fire_polys/prot_current_fire_polys.shp'
+    shapefile_path = '../data/prot_current_fire_polys/prot_current_fire_polys.shp'
     # Read the shapefile into a GeoDataFrame
     gdf = gpd.read_file(shapefile_path)
     locations = gdf[['FIRE_NUM', 'geometry']]
@@ -74,7 +74,7 @@ def main():
     locations_df = spark.createDataFrame(locations).repartition(100)
     locations_df = locations_df.withColumnRenamed("FIRE_NUM", "fire_num")
 
-    dbf = Dbf5('../local_download/prot_current_fire_polys/prot_current_fire_polys.dbf') 
+    dbf = Dbf5('../data/prot_current_fire_polys/prot_current_fire_polys.dbf') 
     wildfire = dbf.to_dataframe()
     wildfire.columns = map(str.lower, wildfire.columns)
     wildfire["fire_stat"] = wildfire["fire_stat"].apply(lambda x: str(x))
@@ -93,7 +93,7 @@ def main():
     .mode("append").save()
 
 if __name__ == '__main__':
-    with open('../config/config.yaml', 'r') as file:
+    with open('./config/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
     conf = SparkConf()
     # conf.set("spark.jars.packages", "com.datastax.spark:spark-cassandra-connector_2.12:3.4.0")
