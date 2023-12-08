@@ -47,7 +47,7 @@ submenu_1 = [
             children=[
                 html.Div("Weather", style={'widht': '6rem', 'float': 'left', 'cursor' : 'default'}),
                 html.Div(
-                    html.Img(src='/assets/arrow-down-sign-to-navigate.png', style={'width': '1em','height': '1em', 'cursor' : 'pointer'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
+                    html.Img(src='/assets/arrow-down-sign-to-navigate.PNG', style={'width': '1em','height': '1em', 'cursor' : 'pointer'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
                 ),
                 html.Div(style={"clear": "both"})
             ],
@@ -71,7 +71,7 @@ html.Div(
             children=[
                 html.Div("Wildfire", style={'widht': '6rem', 'float': 'left', 'cursor' : 'default'}),
                 html.Div(
-                    html.Img(src='/assets/arrow-down-sign-to-navigate.png', style={'width' : '1em', 'height': '1em', 'cursor' : 'pointer'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
+                    html.Img(src='/assets/arrow-down-sign-to-navigate.PNG', style={'width' : '1em', 'height': '1em', 'cursor' : 'pointer'}), style={'float': 'right'} #-down was -right. mr-X, X is the position
                 ),
                 html.Div(style={"clear": "both"})
             ],
