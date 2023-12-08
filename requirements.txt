@@ -9,6 +9,6 @@ cassandra-driver
 dash
 dash-labs
 utils
-dash_bootstrap_components
+dash-bootstrap-components
 dash-daq
-dash-leaflef
+dash-leaflet
