@@ -1,4 +1,4 @@
-import time, yaml
+import time, yaml, pytz
 from datetime import datetime
 from data_fetch import WeatherDataFetcher
 from cassandra import ConsistencyLevel
@@ -9,7 +9,8 @@ from cassandra.auth import PlainTextAuthProvider
 
 def main(weather_data_fetcher, config):
 
-    print(f"Initalize database at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    tz = pytz.timezone(config['TIMEZONE'])
+    print(f"Initialize weather data at {datetime.now(tz=tz).strftime('%Y-%m-%d %H:%M:%S')}")
     data = weather_data_fetcher.fetch_history()
 
     ssl_context = SSLContext(PROTOCOL_TLSv1_2)

@@ -7,6 +7,8 @@ import zipfile
 import schedule, time
 import requests
 import os
+import pytz
+from datetime import datetime
 from pyspark.sql import SparkSession
 from pyproj import Proj, transform
 from shapely.geometry import Polygon, MultiPolygon
@@ -69,9 +71,9 @@ def download_file(url, local_filename):
             print(f"Failed to download: {url}")
             print(f"Status code: {response.status_code}")
 
-def main():
-    with open('./config/config.yaml', 'r') as file:
-        config = yaml.safe_load(file)
+def main(config):
+    tz = pytz.timezone(config['TIMEZONE'])
+    print(f"Initialize database at {datetime.now(tz=tz).strftime('%Y-%m-%d %H:%M:%S')}")
     conf = SparkConf()
     conf.set("spark.sql.extensions", "com.datastax.spark.connector.CassandraSparkExtensions")
     spark = SparkSession.builder \
@@ -130,7 +132,11 @@ def main():
     .mode("append").save()
 
 if __name__ == '__main__':
-    schedule.every().hour.at(":03").do(main)
+
+    with open('./config/config.yaml', 'r') as file:
+        config = yaml.safe_load(file)
+
+    schedule.every().hour.at(":03").do(main, config)
     while True:
         schedule.run_pending()
         time.sleep(60)

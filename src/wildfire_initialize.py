@@ -1,13 +1,12 @@
-from cassandra.cluster import Cluster
-import yaml, time
-import time, yaml
-from cassandra.cluster import Cluster
+import time, yaml, pytz
+from datetime import datetime
 from cassandra.cluster import Cluster
 from ssl import SSLContext, PROTOCOL_TLSv1_2 , CERT_REQUIRED
 from cassandra.auth import PlainTextAuthProvider
-import time
 
 def main(config):
+    tz = pytz.timezone(config['TIMEZONE'])
+    print(f"Initialize wildfire data at {datetime.now(tz=tz).strftime('%Y-%m-%d %H:%M:%S')}")
     ssl_context = SSLContext(PROTOCOL_TLSv1_2 )
     ssl_context.load_verify_locations('./config/sf-class2-root.crt')
     ssl_context.verify_mode = CERT_REQUIRED
@@ -41,8 +40,10 @@ def main(config):
     session_create.shutdown()
 
 if __name__ == '__main__':
+
     with open('./config/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
+
     t1 = time.time()
     main(config)
     t2 = time.time()

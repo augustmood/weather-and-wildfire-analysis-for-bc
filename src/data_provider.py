@@ -1,5 +1,6 @@
 import sys
 import yaml
+import pytz
 from datetime import datetime, timedelta
 from pyspark import SparkConf
 from pyspark.sql import SparkSession
@@ -45,8 +46,8 @@ class DataExtractor:
             .options(table="history_weather", keyspace=self._config['KEYSPACE']).load()
         history_weather = history_weather.withColumn('date', to_date(col('date')))
 
-        start_date = (datetime.today()-timedelta(days=7)).strftime('%Y-%m-%d')
-        end_date = (datetime.today()-timedelta(days=1)).strftime('%Y-%m-%d')
+        start_date = (datetime.now(tz=pytz.timezone(self._config['TIMEZONE']))-timedelta(days=7)).strftime('%Y-%m-%d')
+        end_date = (datetime.now(tz=pytz.timezone(self._config['TIMEZONE']))-timedelta(days=1)).strftime('%Y-%m-%d')
         filtered_df = history_weather.filter((col('date') >= start_date) & (col('date') <= end_date))
         filtered_df.toPandas().to_csv(path)
         return None
@@ -56,8 +57,8 @@ class DataExtractor:
             .options(table="forecast_weather", keyspace=self._config['KEYSPACE']).load()
         forecast_weather = forecast_weather.withColumn('date', to_date(col('date')))
 
-        start_date = (datetime.today()+timedelta(days=1)).strftime('%Y-%m-%d')
-        end_date = (datetime.today()+timedelta(days=3)).strftime('%Y-%m-%d')
+        start_date = (datetime.now(tz=pytz.timezone(self._config['TIMEZONE']))+timedelta(days=1)).strftime('%Y-%m-%d')
+        end_date = (datetime.now(tz=pytz.timezone(self._config['TIMEZONE']))+timedelta(days=3)).strftime('%Y-%m-%d')
         filtered_df = forecast_weather.filter((col('date') >= start_date) & (col('date') <= end_date))
         filtered_df.toPandas().to_csv(path)
         return None

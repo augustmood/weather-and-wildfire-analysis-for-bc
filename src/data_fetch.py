@@ -1,6 +1,8 @@
+import pytz
 import requests
 import json
 import time
+import pytz
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
@@ -9,13 +11,16 @@ class WeatherDataFetcher:
 
     def __init__(self, config, retries=5):
         self._config = config
+        self._timezone = pytz.timezone(config['TIMEZONE'])
         self._raw_data = []
         self._locations = [{"q": city + ', British Columnbia, Canada'} for city in self._config['CITIES']]
         self._payloads = [{"locations": self._locations[:int(len(self._config['CITIES']) / 2)]},
                          {"locations": self._locations[int(len(self._config['CITIES']) / 2):]}]
         self.retries = retries
 
-    def _get_last_days(self, start_date_str=datetime.now().strftime('%Y-%m-%d'), num_days=None):
+    def _get_last_days(self, start_date_str=None, num_days=None):
+        if start_date_str is None:
+            start_date_str = datetime.now(tz=self._timezone).strftime('%Y-%m-%d')
         num_days = num_days or self._config['HISTORY_DAYS']
         date_format = "%Y-%m-%d"
         last_dates = []
