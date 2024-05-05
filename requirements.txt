@@ -1,0 +1,15 @@
+pandas
+requests
+schedule
+simpledbf
+geopandas
+pyproj
+shapely
+cassandra-driver
+dash
+dash-labs
+utils
+dash-bootstrap-components
+dash-daq
+dash-leaflet
+dash-extensions
